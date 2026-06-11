@@ -595,20 +595,34 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
 
 <script>
 // ══════════════════════════════════════════════
-//  STORAGE HELPERS (persistent across sessions)
+//  STORAGE HELPERS — Netlify Blobs via serverless function
 // ══════════════════════════════════════════════
-const ST = window.storage;
+async function dbCall(action, key, value) {
+  const res = await fetch('/.netlify/functions/db', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, key, value })
+  });
+  return res.json();
+}
 
-async function stGet(key, shared=false) {
-  try { const r = await ST.get(key, shared); return r ? JSON.parse(r.value) : null; }
-  catch(e) { return null; }
+async function stGet(key) {
+  const r = await dbCall('get', key);
+  return r.ok ? r.value : null;
 }
-async function stSet(key, val, shared=false) {
-  try { await ST.set(key, JSON.stringify(val), shared); } catch(e){}
+
+async function stSet(key, val) {
+  await dbCall('set', key, val);
 }
-async function stList(prefix, shared=false) {
-  try { const r = await ST.list(prefix, shared); return r ? r.keys : []; }
-  catch(e) { return []; }
+
+async function stList(prefix) {
+  const r = await dbCall('list', prefix);
+  return r.ok ? r.keys : [];
+}
+
+async function stGetMany(keys) {
+  const r = await dbCall('getMany', null, keys);
+  return r.ok ? r.values : {};
 }
 
 // ══════════════════════════════════════════════
@@ -769,15 +783,15 @@ async function handleOAuthCallback() {
     if(!username) throw new Error('No username returned');
 
     // Load or create user in our storage
-    let user = await stGet('user:'+username, true);
+    let user = await stGet('user:'+username);
     if(!user) {
       user = { username, kickId, avatar, pts:0, spins:0, wins:0, lastSpinDate:'', createdAt: Date.now() };
-      await stSet('user:'+username, user, true);
+      await stSet('user:'+username, user);
     } else {
       // Update kickId/avatar in case they changed
       user.kickId  = kickId;
       user.avatar  = avatar;
-      await stSet('user:'+username, user, true);
+      await stSet('user:'+username, user);
     }
 
     sessionStorage.removeItem('pkce_verifier');
@@ -1117,11 +1131,11 @@ async function onSpinComplete(seg) {
   if(seg.pts >= 100) userData.wins = (userData.wins||0) + 1;
 
   incrementSpinsToday();
-  await stSet('user:'+currentUser.username, userData, true);
+  await stSet('user:'+currentUser.username, userData);
 
   const todayKey = 'spins:'+todayStr().replace(/ /g,'-');
-  const todaySpins = (await stGet(todayKey, true)) || 0;
-  await stSet(todayKey, todaySpins+1, true);
+  const todaySpins = (await stGet(todayKey)) || 0;
+  await stSet(todayKey, todaySpins+1);
 
   // Check rank up
   const newRank = getViewerRank(userData.pts||0);
@@ -1148,11 +1162,11 @@ function updateMyCard() {
 //  STATS
 // ══════════════════════════════════════════════
 async function loadStats() {
-  const keys = await stList('user:', true);
+  const keys = await stList('user:');
   document.getElementById('statUsers').textContent = keys.length || '—';
 
   const todayKey = 'spins:'+todayStr().replace(/ /g,'-');
-  const todaySpins = (await stGet(todayKey, true)) || 0;
+  const todaySpins = (await stGet(todayKey)) || 0;
   document.getElementById('statSpins').textContent = todaySpins;
 }
 
@@ -1167,15 +1181,16 @@ function maskName(name) {
 }
 
 async function loadRanking() {
-  const keys = await stList('user:', true);
-  const users = [];
-  for(const key of keys) {
-    const u = await stGet(key, true);
-    if(u) users.push(u);
+  const keys = await stList('user:');
+  if(!keys.length) {
+    document.getElementById('rankingList').innerHTML = '<div class="ranking-empty">Nadie en el ranking todavía.<br>¡Sé el primero!</div>';
+    document.getElementById('myCardRank').textContent = '#—';
+    return;
   }
+  const values = await stGetMany(keys);
+  const users = Object.values(values).filter(Boolean);
   users.sort((a,b)=>(b.pts||0)-(a.pts||0));
 
-  // Update my rank
   const myRank = users.findIndex(u=>u.username===currentUser.username)+1;
   document.getElementById('myCardRank').textContent = myRank > 0 ? '#'+myRank : '#—';
 
@@ -1236,19 +1251,21 @@ async function loadAdminData() {
   document.getElementById('adminTodayDate').textContent   = todayStr();
 
   // Users
-  const keys = await stList('user:', true);
+  const keys = await stList('user:');
   document.getElementById('adminTotalUsers').textContent = keys.length;
 
   let totalSpins = 0;
   const users = [];
-  for(const key of keys) {
-    const u = await stGet(key, true);
-    if(u){ users.push(u); totalSpins += (u.spins||0); }
+  if(keys.length) {
+    const values = await stGetMany(keys);
+    Object.values(values).forEach(u => {
+      if(u){ users.push(u); totalSpins += (u.spins||0); }
+    });
   }
   document.getElementById('adminTotalSpins').textContent = totalSpins;
 
   const todayKey = 'spins:'+todayStr().replace(/ /g,'-');
-  const todaySpins = (await stGet(todayKey, true)) || 0;
+  const todaySpins = (await stGet(todayKey)) || 0;
   document.getElementById('adminSpinsToday').textContent = todaySpins;
 
   // Users list sorted by pts
@@ -1302,10 +1319,10 @@ function copyAdminCode() {
 }
 
 async function adminAddPts(username, amount) {
-  const u = await stGet('user:'+username, true);
+  const u = await stGet('user:'+username);
   if(!u) return;
   u.pts = (u.pts||0) + amount;
-  await stSet('user:'+username, u, true);
+  await stSet('user:'+username, u);
   // If this is the current user, update live
   if(currentUser && currentUser.username === username) {
     userData.pts = u.pts;
@@ -1321,10 +1338,10 @@ async function adminSetPts(username) {
   if(val === null || val === '') return;
   const pts = parseInt(val);
   if(isNaN(pts) || pts < 0) { alert('Número inválido'); return; }
-  const u = await stGet('user:'+username, true);
+  const u = await stGet('user:'+username);
   if(!u) return;
   u.pts = pts;
-  await stSet('user:'+username, u, true);
+  await stSet('user:'+username, u);
   if(currentUser && currentUser.username === username) {
     userData.pts = pts;
     updateNavUser();
@@ -1357,7 +1374,7 @@ async function checkAndAwardViewingPoints() {
 
     // Award points
     userData.pts = (userData.pts || 0) + VIEWING_PTS;
-    await stSet('user:' + currentUser.username, userData, true);
+    await stSet('user:' + currentUser.username, userData);
     const rank = getViewerRank(userData.pts);
     updateNavUser();
     updateMyCard();
