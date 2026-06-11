@@ -808,6 +808,9 @@ function loginAs(data) {
       loadStats();
       loadRanking();
       checkSpinStatus();
+      startViewingTimer();
+      updateLiveStatus();
+      setInterval(updateLiveStatus, 2 * 60 * 1000); // actualiza estado en vivo cada 2 min
     }, 250);
   }, 1000);
 }
@@ -1110,6 +1113,79 @@ function copyAdminCode() {
     msg.style.color='var(--green)'; msg.textContent=`✓ Código "${code}" copiado.`;
     setTimeout(()=>msg.textContent='', 3000);
   });
+}
+
+// ══════════════════════════════════════════════
+//  VIEWING POINTS — 10 pts cada 10 min en vivo
+// ══════════════════════════════════════════════
+const SANTULP_KICK_ID = 4251385;
+const VIEWING_INTERVAL_MS = 10 * 60 * 1000; // 10 minutos
+const VIEWING_PTS = 10;
+let viewingTimer = null;
+
+function startViewingTimer() {
+  if(viewingTimer) clearInterval(viewingTimer);
+  viewingTimer = setInterval(checkAndAwardViewingPoints, VIEWING_INTERVAL_MS);
+}
+
+async function checkAndAwardViewingPoints() {
+  if(!currentUser) return;
+  try {
+    const res = await fetch(`/.netlify/functions/check-live`);
+    if(!res.ok) return;
+    const data = await res.json();
+    if(!data.isLive) return;
+
+    // Award points
+    userData.pts = (userData.pts || 0) + VIEWING_PTS;
+    await stSet('user:' + currentUser.username, userData, true);
+    updateNavUser();
+    updateMyCard();
+
+    // Show toast notification
+    showToast(`+${VIEWING_PTS} pts por ver el stream 📺`);
+  } catch(e) {
+    console.log('Live check failed:', e);
+  }
+}
+
+async function updateLiveStatus() {
+  try {
+    const res = await fetch('/.netlify/functions/check-live');
+    if(!res.ok) return;
+    const data = await res.json();
+    const dot = document.querySelector('.live-dot');
+    const liveText = document.querySelector('.nav-live');
+    if(data.isLive) {
+      dot.style.background = 'var(--green)';
+      dot.style.boxShadow = '0 0 6px var(--green)';
+      liveText.innerHTML = `<div class="live-dot"></div>SANTULP EN VIVO`;
+      liveText.style.color = 'var(--green)';
+    } else {
+      dot.style.background = 'var(--muted)';
+      dot.style.boxShadow = 'none';
+      liveText.innerHTML = `<div class="live-dot" style="background:var(--muted);box-shadow:none;animation:none"></div>OFFLINE`;
+      liveText.style.color = 'var(--muted)';
+    }
+  } catch(e) {}
+}
+
+function showToast(msg) {
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position:fixed;bottom:28px;right:28px;z-index:999;
+    background:var(--surface);border:1px solid var(--green);
+    color:var(--text);padding:14px 20px;border-radius:8px;
+    font-size:14px;font-weight:600;
+    box-shadow:0 4px 24px rgba(0,208,132,0.15);
+    animation:viewEnter .3s ease forwards;
+  `;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(()=>{
+    toast.style.animation = 'viewExit .3s ease forwards';
+    setTimeout(()=>toast.remove(), 300);
+  }, 3500);
 }
 
 // ══════════════════════════════════════════════
