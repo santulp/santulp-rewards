@@ -266,9 +266,9 @@ canvas#wheelCanvas{width:380px;height:380px;border-radius:50%;position:relative;
 .sp-tab:hover{border-color:var(--green);color:var(--green)}
 .sp-tab.active{background:var(--green);color:#0A0A0F;border-color:var(--green)}
 .sp-games{display:flex;flex-direction:column;gap:12px}
-.sp-game{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s}
-.sp-game:hover{border-color:var(--border2)}
-.sp-game-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer}
+.sp-game{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s}
+.sp-game:hover{border-color:var(--green);box-shadow:0 0 16px #00D08415}
+.sp-game-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
 .sp-teams{flex:1}
 .sp-team{font-size:15px;font-weight:600;margin-bottom:4px}
 .sp-time{font-size:11px;color:var(--muted)}
@@ -278,21 +278,22 @@ canvas#wheelCanvas{width:380px;height:380px;border-radius:50%;position:relative;
 .sp-odd-btn:hover{border-color:var(--gold);background:var(--gold-dim)}
 .sp-odd-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .sp-odd-val{font-size:15px;font-weight:700;color:var(--gold)}
-.sp-game-body{display:none;padding:0 20px 20px;border-top:1px solid var(--border)}
-.sp-game-body.open{display:block}
+.sp-game-footer{display:flex;align-items:center;gap:10px;padding:0 20px 16px;
+  opacity:0;transition:opacity .2s;pointer-events:none}
+.sp-game:hover .sp-game-footer{opacity:1;pointer-events:all}
 .sp-ai-btn{display:flex;align-items:center;gap:8px;background:var(--green-dim);
-  border:1px solid var(--green);color:var(--green);padding:10px 18px;border-radius:7px;
-  cursor:pointer;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;
-  transition:all .2s;margin-top:16px}
+  border:1px solid var(--green);color:var(--green);padding:8px 16px;border-radius:7px;
+  cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;transition:all .2s}
 .sp-ai-btn:hover{background:var(--green);color:#0A0A0F}
-.sp-ai-result{margin-top:14px;background:var(--bg);border:1px solid var(--border);
-  border-radius:8px;padding:16px;font-size:14px;line-height:1.7;color:var(--text);display:none}
+.sp-ai-btn:disabled{opacity:.5;cursor:not-allowed}
+.sp-ai-result{margin:0 20px 16px;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;padding:16px;font-size:13px;line-height:1.7;color:var(--text);display:none}
 .sp-ai-result.show{display:block}
 .sp-loading{text-align:center;padding:48px;color:var(--muted);font-size:14px}
 .sp-empty{text-align:center;padding:48px;color:var(--muted)}
-.sp-stake-btn{display:inline-flex;align-items:center;gap:8px;margin-top:12px;
+.sp-stake-btn{display:inline-flex;align-items:center;gap:6px;
   background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);
-  padding:8px 16px;border-radius:6px;font-size:12px;font-weight:700;
+  padding:8px 14px;border-radius:6px;font-size:12px;font-weight:700;
   text-decoration:none;font-family:'Inter',sans-serif;transition:all .2s}
 .sp-stake-btn:hover{background:var(--gold);color:#0A0A0F}
 .sp-refresh{font-size:11px;color:var(--muted);text-align:right;margin-bottom:8px}
@@ -1921,40 +1922,36 @@ function renderSportsGames(sports) {
   gamesDiv.innerHTML = filtered.slice(0,20).map((game, i) => {
     const odds = getBestOdds(game);
     const oddsHtml = odds ? odds.map(o => `
-      <div class="sp-odd-btn" onclick="event.stopPropagation()">
-        <div class="sp-odd-label">${o.name.length > 6 ? o.name.slice(0,6)+'...' : o.name}</div>
+      <div class="sp-odd-btn">
+        <div class="sp-odd-label">${o.name.length > 8 ? o.name.slice(0,8)+'...' : o.name}</div>
         <div class="sp-odd-val">${o.price.toFixed(2)}</div>
       </div>`).join('') : '<span style="color:var(--muted);font-size:12px">Sin cuotas</span>';
 
-    const teams = game.home_team && game.away_team
-      ? `<div class="sp-team">${game.away_team}</div><div class="sp-team" style="color:var(--muted)">vs ${game.home_team}</div>`
-      : `<div class="sp-team">${game.home_team || '—'}</div>`;
+    const awayTeam = game.away_team || '—';
+    const homeTeam = game.home_team || '—';
+    const oddsJson = JSON.stringify(odds||[]).replace(/"/g,'&quot;');
 
     return `
     <div class="sp-game" id="spgame_${i}">
-      <div class="sp-game-header" onclick="toggleGame(${i})">
+      <div class="sp-game-header">
         <div class="sp-teams">
-          ${teams}
+          <div class="sp-team">${awayTeam}</div>
+          <div class="sp-team" style="color:var(--muted)">vs ${homeTeam}</div>
           <div class="sp-time">${game._sport.emoji} ${game._sport.name} · ${formatOddsTime(game.commence_time)}</div>
         </div>
         <div class="sp-odds">${oddsHtml}</div>
       </div>
-      <div class="sp-game-body" id="spbody_${i}">
-        <a href="https://pba.stake.bet.ar/?c=STAKELP&offer=stakelp" target="_blank" class="sp-stake-btn">
-          🎰 Apostar en Stake Argentina
-        </a>
-        <button class="sp-ai-btn" onclick="getAIPrediction(${i}, '${(game.away_team||'').replace(/'/g,"\\'")}', '${(game.home_team||'').replace(/'/g,"\\'")}', '${game._sport.name}', ${JSON.stringify(odds||[]).replace(/"/g,"'")})">
-          ✨ Analizar con IA
+      <div class="sp-game-footer">
+        <button class="sp-ai-btn" id="spaiBtn_${i}" onclick="getAIPrediction(${i}, '${awayTeam.replace(/'/g,"\\'")}', '${homeTeam.replace(/'/g,"\\'")}', '${game._sport.name}', '${oddsJson}')">
+          ✨ Análisis IA
         </button>
-        <div class="sp-ai-result" id="spai_${i}"></div>
+        <a href="https://pba.stake.bet.ar/?c=STAKELP&offer=stakelp" target="_blank" class="sp-stake-btn">
+          🎰 Apostar en Stake
+        </a>
       </div>
+      <div class="sp-ai-result" id="spai_${i}"></div>
     </div>`;
   }).join('');
-}
-
-function toggleGame(i) {
-  const body = document.getElementById('spbody_' + i);
-  body.classList.toggle('open');
 }
 
 function filterSport(key) {
@@ -1962,43 +1959,33 @@ function filterSport(key) {
   renderSportsGames(allSportsData);
 }
 
-async function getAIPrediction(i, away, home, sport, odds) {
-  const btn = document.querySelector(`#spgame_${i} .sp-ai-btn`);
+async function getAIPrediction(i, away, home, sport, oddsJson) {
+  const btn = document.getElementById('spaiBtn_' + i);
   const result = document.getElementById('spai_' + i);
   btn.textContent = '⏳ Analizando...';
   btn.disabled = true;
   result.classList.add('show');
-  result.textContent = 'La IA está analizando el partido...';
+  result.innerHTML = '<span style="color:var(--muted)">La IA está analizando el partido...</span>';
 
-  const oddsText = Array.isArray(odds) ? odds.map(o => `${o.name}: ${o.price}`).join(', ') : 'No disponibles';
+  let odds = [];
+  try { odds = JSON.parse(oddsJson.replace(/&quot;/g, '"')); } catch(e) {}
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/ai-predict', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
-        messages: [{
-          role: 'user',
-          content: `Sos un analista deportivo experto. Analizá este partido de ${sport}: ${away} vs ${home}. 
-Cuotas actuales: ${oddsText}.
-Dá un análisis breve (máx 200 palabras) con:
-1. Contexto del partido
-2. Cuál es el favorito según las cuotas
-3. Tu recomendación de apuesta con razonamiento
-4. Nivel de confianza (Bajo/Medio/Alto)
-Respondé en español, de forma directa y útil para alguien que va a apostar.`
-        }]
-      })
+      body: JSON.stringify({ away, home, sport, odds })
     });
     const data = await res.json();
-    const text = data.content?.[0]?.text || 'No se pudo obtener el análisis.';
-    result.innerHTML = text.replace(/\n/g, '<br>');
+    if(data.ok) {
+      result.innerHTML = data.analysis.replace(/\n/g, '<br>');
+    } else {
+      result.innerHTML = '<span style="color:var(--red)">Error: ' + (data.error || 'Sin respuesta') + '</span>';
+    }
   } catch(e) {
-    result.textContent = 'Error al conectar con la IA. Intentá de nuevo.';
+    result.innerHTML = '<span style="color:var(--red)">Error al conectar. Intentá de nuevo.</span>';
   }
-  btn.textContent = '✨ Analizar con IA';
+  btn.textContent = '✨ Análisis IA';
   btn.disabled = false;
 }
 
