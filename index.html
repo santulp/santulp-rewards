@@ -510,9 +510,11 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     <div id="adminLoginBox" class="admin-card" style="max-width:380px">
       <div class="admin-card-title">Acceso administrador</div>
       <div style="position:relative;width:100%">
-  <input class="admin-input" type="password" id="adminPassInput" placeholder="CONTRASEÑA" style="padding-right:48px"/>
-  <span onclick="toggleAdminPass()" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none" id="adminPassEye">👁️</span>
-</div> style="font-family:'Inter',sans-serif;font-size:16px;letter-spacing:1px"/>
+        <input class="admin-input" type="password" id="adminPassInput" placeholder="Contraseña" style="font-family:'Inter',sans-serif;font-size:16px;letter-spacing:1px;text-transform:none;padding-right:44px;width:100%"/>
+        <span onclick="toggleAdminPass()" id="adminPassEye" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);line-height:1">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+      </div>
       <button class="admin-btn btn-green" onclick="adminLogin()">ENTRAR</button>
       <div class="admin-msg" id="adminLoginMsg"></div>
     </div>
@@ -1213,15 +1215,17 @@ document.getElementById('copyCodeBtn').addEventListener('click', ()=>{
 document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 function toggleAdminPass() {
   const input = document.getElementById('adminPassInput');
-  const eye = document.getElementById('adminPassEye');
+  const eye   = document.getElementById('adminPassEye');
   if(input.type === 'password') {
     input.type = 'text';
-    eye.textContent = '🙈';
+    eye.style.color = 'var(--green)';
   } else {
     input.type = 'password';
-    eye.textContent = '👁️';
+    eye.style.color = 'var(--muted)';
   }
 }
+
+document.getElementById('adminPassInput').addEventListener('keydown', e=>{ if(e.key==='Enter') adminLogin(); });
 </script>
 </body>
 </html>
