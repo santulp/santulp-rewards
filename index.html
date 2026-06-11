@@ -1332,18 +1332,14 @@ function getAudioCtx() {
 function playSpinSound(spinning) {
   try {
     const ctx2 = getAudioCtx();
-    if(spinning) {
-      // Ratchet clicking sound during spin
-      const osc = ctx2.createOscillator();
-      const gain = ctx2.createGain();
-      osc.connect(gain); gain.connect(ctx2.destination);
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(200, ctx2.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(80, ctx2.currentTime + 0.1);
-      gain.gain.setValueAtTime(0.15, ctx2.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + 0.1);
-      osc.start(); osc.stop(ctx2.currentTime + 0.1);
-    }
+    const osc = ctx2.createOscillator();
+    const gain = ctx2.createGain();
+    osc.connect(gain); gain.connect(ctx2.destination);
+    osc.type = 'sine';
+    osc.frequency.value = 600;
+    gain.gain.setValueAtTime(0.04, ctx2.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + 0.04);
+    osc.start(); osc.stop(ctx2.currentTime + 0.04);
   } catch(e){}
 }
 
