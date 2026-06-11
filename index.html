@@ -1945,7 +1945,7 @@ function renderSportsGames(sports) {
       <div class="sp-odd-btn${j === favoriteIdx ? ' sp-favorite' : ''}">
         <div class="sp-odd-label">${o.name === 'Draw' ? 'Empate' : o.name.length > 10 ? o.name.slice(0,10)+'.' : o.name}</div>
         <div class="sp-odd-val">${o.price.toFixed(2)}</div>
-      </div>`).join('') : '';
+      </div>`).join('') : '<span style="font-size:11px;color:var(--muted);padding:6px 10px;border:1px solid var(--border);border-radius:6px;white-space:nowrap">Sin cuotas aún</span>';
 
     const awayTeam = game.away_team || '—';
     const homeTeam = game.home_team || '—';
