@@ -1158,77 +1158,37 @@ function getViewerRank(pts) {
 }
 
 // Wheel segments per rank
+// Premios en plata por nivel (ARS)
+const RANK_PRIZES = {
+  Beginner: { p1: 1000,  p2: 5000,  p3: 10000,  jackpot: 100000  },
+  Regular:  { p1: 1500,  p2: 7500,  p3: 15000,  jackpot: 150000  },
+  Pro:      { p1: 2000,  p2: 10000, p3: 20000,  jackpot: 200000  },
+  Elite:    { p1: 3000,  p2: 15000, p3: 30000,  jackpot: 300000  },
+  Legend:   { p1: 5000,  p2: 25000, p3: 50000,  jackpot: 500000  },
+};
+
+// Probabilidades: 25pts=60%, 50pts=25%, $1k=8%, $5k=4%, $10k=2%, $100k=0.1%, nada=0.9%
+// Usamos weight de 1000 partes totales
+function buildSegmentsForRank(rankName) {
+  const p = RANK_PRIZES[rankName] || RANK_PRIZES.Beginner;
+  const fmt = (n) => '$' + n.toLocaleString('es-AR');
+  return [
+    { label:'25 PTS',   color:'#1A1A2E', weight:600, pts:25,  cash:0,      prize:'25 Puntos ⭐',             desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
+    { label:'50 PTS',   color:'#2A2A3E', weight:250, pts:50,  cash:0,      prize:'50 Puntos ⭐',             desc:'¡Bien! Seguí acumulando.', emoji:'⭐' },
+    { label:fmt(p.p1),  color:'#1E4A2A', weight:80,  pts:0,   cash:p.p1,   prize:fmt(p.p1)+' ARS 💸',       desc:'¡Felicitaciones! Hablá con SantuLP en el stream para reclamar.', emoji:'💸' },
+    { label:fmt(p.p2),  color:'#00A86B', weight:40,  pts:0,   cash:p.p2,   prize:fmt(p.p2)+' ARS 🎉',       desc:'¡Muy bien! Hablá con SantuLP en el stream para reclamar.', emoji:'🎉' },
+    { label:fmt(p.p3),  color:'#00D084', weight:20,  pts:0,   cash:p.p3,   prize:fmt(p.p3)+' ARS 🔥',       desc:'¡Excelente! Hablá con SantuLP en el stream para reclamar.', emoji:'🔥' },
+    { label:'NADA',     color:'#111118', weight:9,   pts:0,   cash:0,      prize:'Sin premio 😔',            desc:'Esta vez no fue. ¡Mañana volvés a intentarlo!', emoji:'😔' },
+    { label:'JACKPOT',  color:'#C9A84C', weight:1,   pts:0,   cash:p.jackpot, prize:'JACKPOT '+fmt(p.jackpot)+' 🏆', desc:'¡¡JACKPOT!! Hablá con SantuLP en el stream para reclamar tu premio.', emoji:'🏆' },
+  ];
+}
+
 const WHEEL_SEGMENTS = {
-  Beginner: [
-    { label:'50 PTS',  color:'#1E1E30', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
-    { label:'100 PTS', color:'#2A2A3E', weight:20, pts:100, prize:'100 Puntos 🎮',     desc:'¡Bien! Seguí acumulando.', emoji:'🎮' },
-    { label:'50 PTS',  color:'#1A1A2E', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
-    { label:'200 PTS', color:'#3B3B6B', weight:15, pts:200, prize:'200 Puntos 🎯',     desc:'¡Genial!', emoji:'🎯' },
-    { label:'50 PTS',  color:'#1E1E30', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
-    { label:'100 PTS', color:'#2A2A3E', weight:20, pts:100, prize:'100 Puntos 🎮',     desc:'¡Bien!', emoji:'🎮' },
-    { label:'PREMIO',  color:'#00D084', weight:5,  pts:300, prize:'Premio Beginner 🎉', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'🎉' },
-    { label:'50 PTS',  color:'#1A1A2E', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
-    { label:'200 PTS', color:'#3B3B6B', weight:15, pts:200, prize:'200 Puntos 🎯',     desc:'¡Genial!', emoji:'🎯' },
-    { label:'50 PTS',  color:'#1E1E30', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
-    { label:'100 PTS', color:'#2A2A3E', weight:20, pts:100, prize:'100 Puntos 🎮',     desc:'¡Bien!', emoji:'🎮' },
-    { label:'JACKPOT', color:'#C9A84C', weight:2,  pts:500, prize:'JACKPOT 🏆',        desc:'¡JACKPOT! Hablá con SantuLP en el stream.', emoji:'🏆' },
-  ],
-  Regular: [
-    { label:'100 PTS', color:'#1E3A2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados a tu cuenta.', emoji:'🎯' },
-    { label:'200 PTS', color:'#2A3E2A', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'¡Buen tiro!', emoji:'⚡' },
-    { label:'100 PTS', color:'#1E3A2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados a tu cuenta.', emoji:'🎯' },
-    { label:'PREMIO',  color:'#00D084', weight:8,  pts:400, prize:'Premio Regular 🎉', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'🎉' },
-    { label:'100 PTS', color:'#1E3A2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados a tu cuenta.', emoji:'🎯' },
-    { label:'300 PTS', color:'#3B6B3B', weight:12, pts:300, prize:'300 Puntos 💎',     desc:'¡Muy bien!', emoji:'💎' },
-    { label:'100 PTS', color:'#2A3E2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados.', emoji:'🎯' },
-    { label:'PREMIO',  color:'#00A86B', weight:8,  pts:400, prize:'Premio Regular 🎉', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'🎉' },
-    { label:'200 PTS', color:'#2A3E2A', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'¡Buen tiro!', emoji:'⚡' },
-    { label:'100 PTS', color:'#1E3A2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados.', emoji:'🎯' },
-    { label:'300 PTS', color:'#3B6B3B', weight:12, pts:300, prize:'300 Puntos 💎',     desc:'¡Muy bien!', emoji:'💎' },
-    { label:'JACKPOT', color:'#C9A84C', weight:3,  pts:800, prize:'JACKPOT 🏆',        desc:'¡JACKPOT! Hablá con SantuLP en el stream.', emoji:'🏆' },
-  ],
-  Pro: [
-    { label:'200 PTS', color:'#2A1A4E', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
-    { label:'400 PTS', color:'#3B2A6B', weight:14, pts:400, prize:'400 Puntos 💎',     desc:'¡Buen tiro!', emoji:'💎' },
-    { label:'200 PTS', color:'#2A1A4E', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
-    { label:'PREMIO',  color:'#9B59B6', weight:10, pts:600, prize:'Premio Pro ⚡',     desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'⚡' },
-    { label:'200 PTS', color:'#2A1A4E', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
-    { label:'500 PTS', color:'#4B3A7B', weight:10, pts:500, prize:'500 Puntos 👑',     desc:'¡Excelente!', emoji:'👑' },
-    { label:'200 PTS', color:'#3B2A6B', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
-    { label:'PREMIO',  color:'#7B3FA6', weight:10, pts:600, prize:'Premio Pro ⚡',     desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'⚡' },
-    { label:'400 PTS', color:'#3B2A6B', weight:14, pts:400, prize:'400 Puntos 💎',     desc:'¡Buen tiro!', emoji:'💎' },
-    { label:'200 PTS', color:'#2A1A4E', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
-    { label:'500 PTS', color:'#4B3A7B', weight:10, pts:500, prize:'500 Puntos 👑',     desc:'¡Excelente!', emoji:'👑' },
-    { label:'JACKPOT', color:'#C9A84C', weight:4,  pts:1500,prize:'JACKPOT 🏆',        desc:'¡JACKPOT! Hablá con SantuLP en el stream.', emoji:'🏆' },
-  ],
-  Elite: [
-    { label:'300 PTS', color:'#003A4E', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
-    { label:'600 PTS', color:'#004E6B', weight:12, pts:600, prize:'600 Puntos 💎',     desc:'¡Buen tiro!', emoji:'💎' },
-    { label:'300 PTS', color:'#003A4E', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
-    { label:'PREMIO',  color:'#00D0FF', weight:10, pts:800, prize:'Premio Elite 💎',   desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'💎' },
-    { label:'300 PTS', color:'#003A4E', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
-    { label:'800 PTS', color:'#005E7B', weight:8,  pts:800, prize:'800 Puntos 👑',     desc:'¡Excelente!', emoji:'👑' },
-    { label:'300 PTS', color:'#004E6B', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
-    { label:'PREMIO',  color:'#00A0CC', weight:10, pts:800, prize:'Premio Elite 💎',   desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'💎' },
-    { label:'600 PTS', color:'#004E6B', weight:12, pts:600, prize:'600 Puntos 💎',     desc:'¡Buen tiro!', emoji:'💎' },
-    { label:'300 PTS', color:'#003A4E', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
-    { label:'800 PTS', color:'#005E7B', weight:8,  pts:800, prize:'800 Puntos 👑',     desc:'¡Excelente!', emoji:'👑' },
-    { label:'JACKPOT', color:'#C9A84C', weight:5,  pts:2500,prize:'JACKPOT 🏆',        desc:'¡JACKPOT! Hablá con SantuLP en el stream.', emoji:'🏆' },
-  ],
-  Legend: [
-    { label:'500 PTS', color:'#3A2A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
-    { label:'1000 PTS',color:'#4E3A00', weight:10, pts:1000, prize:'1000 Puntos 👑',   desc:'¡Buen tiro!', emoji:'👑' },
-    { label:'500 PTS', color:'#3A2A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
-    { label:'PREMIO',  color:'#C9A84C', weight:10, pts:1500, prize:'Premio Legend 👑', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'👑' },
-    { label:'500 PTS', color:'#3A2A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
-    { label:'1500 PTS',color:'#5E4A00', weight:8,  pts:1500, prize:'1500 Puntos 💎',   desc:'¡Excelente!', emoji:'💎' },
-    { label:'500 PTS', color:'#4E3A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
-    { label:'PREMIO',  color:'#E0BB60', weight:10, pts:1500, prize:'Premio Legend 👑', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'👑' },
-    { label:'1000 PTS',color:'#4E3A00', weight:10, pts:1000, prize:'1000 Puntos 👑',   desc:'¡Buen tiro!', emoji:'👑' },
-    { label:'500 PTS', color:'#3A2A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
-    { label:'1500 PTS',color:'#5E4A00', weight:8,  pts:1500, prize:'1500 Puntos 💎',   desc:'¡Excelente!', emoji:'💎' },
-    { label:'JACKPOT', color:'#FF6B00', weight:6,  pts:5000, prize:'JACKPOT LEGEND 🏆',desc:'¡JACKPOT LEGEND! Hablá con SantuLP en el stream.', emoji:'🏆' },
-  ],
+  Beginner: buildSegmentsForRank('Beginner'),
+  Regular:  buildSegmentsForRank('Regular'),
+  Pro:      buildSegmentsForRank('Pro'),
+  Elite:    buildSegmentsForRank('Elite'),
+  Legend:   buildSegmentsForRank('Legend'),
 };
 
 function getSegmentsForRank(rank) {
@@ -1287,8 +1247,7 @@ function updateWheelForRank(rank) {
 }
 
 function getMaxSpinsForRank(rank) {
-  const spins = { Beginner:1, Regular:2, Pro:3, Elite:4, Legend:5 };
-  return spins[rank.name] || 1;
+  return 1; // Siempre 1 giro por día, sin importar el nivel
 }
 
 function getSpinsUsedToday() {
@@ -1397,10 +1356,10 @@ document.getElementById('spinBtn').addEventListener('click', async ()=>{
 });
 
 async function onSpinComplete(seg) {
-  userData.pts         = (userData.pts||0) + seg.pts;
+  userData.pts         = (userData.pts||0) + (seg.pts||0);
   userData.spins       = (userData.spins||0) + 1;
   userData.lastSpinDate = todayStr();
-  if(seg.pts >= 100) userData.wins = (userData.wins||0) + 1;
+  if(seg.cash > 0) userData.wins = (userData.wins||0) + 1;
 
   incrementSpinsToday();
   await stSet('user:'+currentUser.username, userData);
@@ -1409,17 +1368,17 @@ async function onSpinComplete(seg) {
   const todaySpins = (await stGet(todayKey)) || 0;
   await stSet(todayKey, todaySpins+1);
 
-  // Check rank up
-  const newRank = getViewerRank(userData.pts||0);
   updateNavUser();
   updateMyCard();
   loadStats();
   loadRanking();
 
-  document.getElementById('modalEmoji').textContent  = seg.emoji;
-  document.getElementById('modalTitle').textContent  = seg.pts>=1000 ? '¡JACKPOT!' : seg.pts>=400 ? '¡GANASTE!' : seg.pts>=200 ? '¡BIEN!' : '¡SUMASTE!';
-  document.getElementById('modalPrize').textContent  = seg.prize;
-  document.getElementById('modalDesc').textContent   = seg.desc;
+  const isCash    = seg.cash > 0;
+  const isNothing = !seg.pts && !seg.cash;
+  document.getElementById('modalEmoji').textContent = seg.emoji;
+  document.getElementById('modalTitle').textContent = isCash ? (seg.cash >= 50000 ? '¡¡JACKPOT!!' : '¡GANASTE!') : isNothing ? 'SIN PREMIO' : '¡SUMASTE!';
+  document.getElementById('modalPrize').textContent = seg.prize;
+  document.getElementById('modalDesc').textContent  = seg.desc;
   document.getElementById('modalOverlay').classList.add('show');
 }
 
@@ -1575,6 +1534,8 @@ async function loadAdminData() {
           <button onclick="adminAddPts('${u.username}', 100)" style="background:var(--green-dim);border:1px solid var(--green);color:var(--green);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">+100</button>
           <button onclick="adminAddPts('${u.username}', 500)" style="background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">+500</button>
           <button onclick="adminAddPts('${u.username}', 1000)" style="background:#FF475722;border:1px solid var(--red);color:var(--red);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">+1000</button>
+          <button onclick="adminAddPts('${u.username}', -100)" style="background:#FF475711;border:1px solid #FF475766;color:#FF4757;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">-100</button>
+          <button onclick="adminAddPts('${u.username}', -500)" style="background:#FF475711;border:1px solid #FF475766;color:#FF4757;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">-500</button>
           <button onclick="adminSetPts('${u.username}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">✏️</button>
         </div>
       </div>
@@ -1594,15 +1555,14 @@ function copyAdminCode() {
 async function adminAddPts(username, amount) {
   const u = await stGet('user:'+username);
   if(!u) return;
-  u.pts = (u.pts||0) + amount;
+  u.pts = Math.max(0, (u.pts||0) + amount);
   await stSet('user:'+username, u);
-  // If this is the current user, update live
   if(currentUser && currentUser.username === username) {
     userData.pts = u.pts;
     updateNavUser();
     updateMyCard();
   }
-  showToast(`✓ +${amount} pts a ${username}`);
+  showToast(`${amount > 0 ? '+' : ''}${amount} pts a ${username}`);
   setTimeout(()=>loadAdminData(), 400);
 }
 
