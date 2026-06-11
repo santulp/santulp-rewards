@@ -598,7 +598,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
 //  STORAGE HELPERS — Netlify Blobs via serverless function
 // ══════════════════════════════════════════════
 async function dbCall(action, key, value) {
-  const res = await fetch('/.netlify/functions/db', {
+  const res = await fetch('/api/db', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action, key, value })
