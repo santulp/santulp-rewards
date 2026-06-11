@@ -254,7 +254,61 @@ canvas#wheelCanvas{width:270px;height:270px;border-radius:50%;position:relative;
   border-radius:6px;width:100%;transition:all .2s}
 .modal-close:hover{background:#00f09a}
 
-/* ── FOOTER ── */
+/* ── WAGER RACE ── */
+.wr-hero{text-align:center;padding:60px 24px 40px;position:relative;overflow:hidden}
+.wr-hero::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,#C9A84C10 0%,transparent 70%);pointer-events:none}
+.wr-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,12vw,120px);
+  line-height:.9;letter-spacing:2px;margin-bottom:8px}
+.wr-title span{color:var(--gold)}
+.wr-subtitle{font-size:14px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:40px}
+
+.wr-timer{display:flex;gap:16px;justify-content:center;margin-bottom:48px}
+.wr-timer-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:16px 20px;text-align:center;min-width:72px}
+.wr-timer-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--gold);line-height:1}
+.wr-timer-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+.wr-top3{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:12px;max-width:760px;margin:0 auto 48px;align-items:end}
+.wr-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:24px 16px;text-align:center;position:relative;transition:transform .2s}
+.wr-card:hover{transform:translateY(-2px)}
+.wr-card.gold{border-color:var(--gold);box-shadow:0 0 24px #C9A84C20}
+.wr-card.silver{border-color:#C0C0C0;box-shadow:0 0 16px #C0C0C015}
+.wr-card.bronze{border-color:#CD7F32;box-shadow:0 0 16px #CD7F3215}
+.wr-card-pos{font-size:32px;margin-bottom:8px}
+.wr-card-name{font-size:13px;color:var(--muted);margin-bottom:4px;font-family:monospace}
+.wr-card-wager{font-size:12px;color:var(--muted);margin-bottom:16px}
+.wr-card-prize-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.wr-card-prize{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold);letter-spacing:1px}
+.wr-card-pct{font-size:11px;color:var(--muted);margin-top:2px}
+
+.wr-table{max-width:760px;margin:0 auto;background:var(--surface);
+  border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.wr-table-header{display:grid;grid-template-columns:48px 1fr 140px 120px;
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.wr-table-row{display:grid;grid-template-columns:48px 1fr 140px 120px;
+  padding:14px 20px;border-bottom:1px solid var(--border);align-items:center;transition:background .15s}
+.wr-table-row:last-child{border-bottom:none}
+.wr-table-row:hover{background:var(--surface2)}
+.wr-pos{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--muted)}
+.wr-name{font-size:13px;font-family:monospace;color:var(--text)}
+.wr-wager{font-size:13px;color:var(--muted)}
+.wr-prize-cell{font-size:13px;font-weight:700;color:var(--gold);text-align:right}
+.wr-empty{padding:48px;text-align:center;color:var(--muted);font-size:14px}
+
+.wr-prizepool{display:flex;align-items:center;gap:24px;justify-content:center;margin-bottom:40px;flex-wrap:wrap}
+.wr-pool-box{text-align:center}
+.wr-pool-num{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold);line-height:1}
+.wr-pool-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+/* Admin Wager Race */
+.wr-admin-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin-top:20px}
+.wr-player-input{display:grid;grid-template-columns:1fr 140px 100px;gap:10px;margin-bottom:10px;align-items:center}
+.wr-player-input input{background:var(--bg);border:1px solid var(--border);color:var(--text);
+  padding:10px 12px;border-radius:6px;font-family:'Inter',sans-serif;font-size:13px;outline:none;width:100%}
+.wr-player-input input:focus{border-color:var(--green)}
 footer{border-top:1px solid var(--border);padding:28px 40px;
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
 .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px}
@@ -329,6 +383,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     <div class="hero-actions">
       <a onclick="document.getElementById('mainView').scrollTo({top:document.getElementById('ruleta').offsetTop-70,behavior:'smooth'})" class="btn-primary" style="cursor:pointer">Tirar la ruleta</a>
       <a onclick="showRanking()" class="btn-outline" style="cursor:pointer">Ver ranking</a>
+      <a onclick="document.getElementById('mainView').scrollTo({top:document.getElementById('wagerrace').offsetTop-70,behavior:'smooth'})" class="btn-outline" style="cursor:pointer;border-color:var(--gold);color:var(--gold)">🏁 Wager Race</a>
     </div>
     <div class="stats-bar">
       <div class="stat"><div class="stat-num" id="statUsers">—</div><div class="stat-label">Jugadores</div></div>
@@ -491,6 +546,76 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     <a href="https://pba.stake.bet.ar/?c=STAKELP&offer=stakelp" class="btn-primary" target="_blank">Ir a Stake Argentina →</a>
   </section>
 
+  <!-- WAGER RACE -->
+  <section id="wagerrace" class="section-border">
+    <div class="wr-hero">
+      <div class="wr-title">WAGER<br><span>RACE</span> 🏁</div>
+      <div class="wr-subtitle">Competencia semanal · Stake Argentina</div>
+
+      <div class="wr-timer">
+        <div class="wr-timer-box"><div class="wr-timer-num" id="wrDays">0</div><div class="wr-timer-lbl">Días</div></div>
+        <div class="wr-timer-box"><div class="wr-timer-num" id="wrHours">0</div><div class="wr-timer-lbl">Horas</div></div>
+        <div class="wr-timer-box"><div class="wr-timer-num" id="wrMins">0</div><div class="wr-timer-lbl">Min</div></div>
+        <div class="wr-timer-box"><div class="wr-timer-num" id="wrSecs">0</div><div class="wr-timer-lbl">Seg</div></div>
+      </div>
+
+      <div class="wr-prizepool">
+        <div class="wr-pool-box">
+          <div class="wr-pool-num" id="wrTotalPool">$0</div>
+          <div class="wr-pool-lbl">Premio total estimado</div>
+        </div>
+        <div style="width:1px;height:48px;background:var(--border)"></div>
+        <div class="wr-pool-box">
+          <div class="wr-pool-num" id="wrTotalPlayers">0</div>
+          <div class="wr-pool-lbl">Jugadores esta semana</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 3 -->
+    <div style="max-width:760px;margin:0 auto;padding:0 24px 40px">
+      <div class="wr-top3" id="wrTop3">
+        <div class="wr-card silver">
+          <div class="wr-card-pos">🥈</div>
+          <div class="wr-card-name" id="wr2name">—</div>
+          <div class="wr-card-wager" id="wr2wager">$0 apostado</div>
+          <div class="wr-card-prize-lbl">Premio</div>
+          <div class="wr-card-prize" id="wr2prize">$0</div>
+          <div class="wr-card-pct" id="wr2pct">+2% del wagger</div>
+        </div>
+        <div class="wr-card gold">
+          <div class="wr-card-pos">🥇</div>
+          <div class="wr-card-name" id="wr1name">—</div>
+          <div class="wr-card-wager" id="wr1wager">$0 apostado</div>
+          <div class="wr-card-prize-lbl">Premio</div>
+          <div class="wr-card-prize" id="wr1prize">$0</div>
+          <div class="wr-card-pct" id="wr1pct">+2% del wagger</div>
+        </div>
+        <div class="wr-card bronze">
+          <div class="wr-card-pos">🥉</div>
+          <div class="wr-card-name" id="wr3name">—</div>
+          <div class="wr-card-wager" id="wr3wager">$0 apostado</div>
+          <div class="wr-card-prize-lbl">Premio</div>
+          <div class="wr-card-prize" id="wr3prize">$0</div>
+          <div class="wr-card-pct" id="wr3pct">+2% del wagger</div>
+        </div>
+      </div>
+
+      <!-- Tabla 4-13 -->
+      <div class="wr-table">
+        <div class="wr-table-header">
+          <div>#</div><div>Usuario</div><div>Apostado</div><div style="text-align:right">Premio / Pts</div>
+        </div>
+        <div id="wrTable"><div class="wr-empty">Cargando resultados...</div></div>
+      </div>
+
+      <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:20px;line-height:1.6">
+        Los premios fijos se acreditan en tu cuenta de Stake Argentina al finalizar la semana.<br>
+        El 2% del wagger se calcula sobre el total apostado durante la semana.
+      </p>
+    </div>
+  </section>
+
   <footer>
     <div class="footer-logo">SANTU<span>LP</span> REWARDS</div>
     <div class="footer-links">
@@ -564,7 +689,58 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
           <button class="admin-btn" style="background:var(--surface2);color:var(--text);border:1px solid var(--border)" onclick="loadAdminData()">↻ Actualizar</button>
         </div>
 
-        <!-- Lista de usuarios (span 2) -->
+        <!-- Wager Race Admin -->
+        <div class="admin-card wr-admin-card" style="grid-column:1/-1">
+          <div class="admin-card-title" style="display:flex;align-items:center;justify-content:space-between">
+            🏁 Wager Race — Cargar datos
+            <span style="font-size:11px;color:var(--muted);font-weight:400;text-transform:none">Se resetea automáticamente cada lunes</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+            <div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Premio fijo 1° lugar (ARS)</label>
+              <input class="admin-input" id="wrPrize1" value="100000" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Premio fijo 2° lugar (ARS)</label>
+              <input class="admin-input" id="wrPrize2" value="50000" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Premio fijo 3° lugar (ARS)</label>
+              <input class="admin-input" id="wrPrize3" value="25000" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Premio fijo 4°–10° (ARS)</label>
+              <input class="admin-input" id="wrPrize4to10" value="7500" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">% del wagger para todos</label>
+              <input class="admin-input" id="wrPct" value="2" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Tope máximo total (ARS)</label>
+              <input class="admin-input" id="wrCap" value="500000" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
+            </div>
+            <div>
+              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Puntos gambler (11°–50°)</label>
+              <input class="admin-input" id="wrPts1150" value="10" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
+            </div>
+          </div>
+
+          <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
+            Jugadores esta semana — poné el username (parcial está bien) y el monto waggereado:
+          </div>
+
+          <div id="wrPlayersInputs">
+            <!-- Generated dynamically -->
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button class="admin-btn btn-green" style="flex:1" onclick="saveWagerRace()">GUARDAR Y PUBLICAR</button>
+            <button class="admin-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted)" onclick="addWrPlayer()">+ Jugador</button>
+          </div>
+          <div class="admin-msg" id="wrAdminMsg"></div>
+        </div>
         <div class="admin-card" style="grid-column:1/-1">
           <div class="admin-card-title" style="display:flex;align-items:center;justify-content:space-between">
             Usuarios registrados
@@ -659,10 +835,12 @@ async function supaGetMeta(key) {
     headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
   });
   const data = await res.json();
-  return data && data[0] ? data[0].value : null;
+  if(!data || !data[0]) return null;
+  try { return JSON.parse(data[0].value); } catch(e) { return data[0].value; }
 }
 
 async function supaSetMeta(key, value) {
+  const val = typeof value === 'string' ? value : JSON.stringify(value);
   await fetch(`${SUPA_URL}/rest/v1/meta`, {
     method: 'POST',
     headers: {
@@ -671,18 +849,20 @@ async function supaSetMeta(key, value) {
       'Content-Type': 'application/json',
       'Prefer': 'resolution=merge-duplicates'
     },
-    body: JSON.stringify({ key, value })
+    body: JSON.stringify({ key, value: val })
   });
 }
 
 // Compatibility wrappers
 async function stGet(key) {
   if(key.startsWith('user:')) return supaGet(key.replace('user:',''));
+  if(key.startsWith('meta:')) return supaGetMeta(key);
   return supaGetMeta(key);
 }
 
 async function stSet(key, val) {
   if(key.startsWith('user:')) return supaUpsert(val);
+  if(key.startsWith('meta:')) return supaSetMeta(key, val);
   return supaSetMeta(key, val);
 }
 
@@ -929,7 +1109,10 @@ function loginAs(data) {
       checkSpinStatus();
       startViewingTimer();
       updateLiveStatus();
-      setInterval(updateLiveStatus, 2 * 60 * 1000); // actualiza estado en vivo cada 2 min
+      setInterval(updateLiveStatus, 2 * 60 * 1000);
+      loadWagerRace();
+      updateWrTimer();
+      setInterval(updateWrTimer, 1000); // actualiza estado en vivo cada 2 min
     }, 250);
   }, 1000);
 }
@@ -1327,6 +1510,7 @@ function adminLogin() {
     document.getElementById('adminLoginBox').style.display   = 'none';
     document.getElementById('adminDashboard').style.display  = '';
     loadAdminData();
+    loadWrAdminData();
   } else {
     document.getElementById('adminLoginMsg').style.color = 'var(--red)';
     document.getElementById('adminLoginMsg').textContent = 'Contraseña incorrecta.';
@@ -1511,6 +1695,189 @@ function showToast(msg) {
     toast.style.animation = 'viewExit .3s ease forwards';
     setTimeout(()=>toast.remove(), 300);
   }, 3500);
+}
+
+// ══════════════════════════════════════════════
+//  WAGER RACE
+// ══════════════════════════════════════════════
+const WR_PRIZES = { 1: 100000, 2: 50000, 3: 25000, other: 7500, pct: 2, cap: 500000 };
+
+function getNextMonday() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = day === 0 ? 1 : 8 - day;
+  const next = new Date(now);
+  next.setDate(now.getDate() + diff);
+  next.setHours(0,0,0,0);
+  return next;
+}
+
+function updateWrTimer() {
+  const end = getNextMonday();
+  const now = new Date();
+  const diff = end - now;
+  if(diff <= 0) { loadWagerRace(); return; }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('wrDays').textContent  = String(d).padStart(2,'0');
+  document.getElementById('wrHours').textContent = String(h).padStart(2,'0');
+  document.getElementById('wrMins').textContent  = String(m).padStart(2,'0');
+  document.getElementById('wrSecs').textContent  = String(s).padStart(2,'0');
+}
+
+function calcPrize(pos, wager, config) {
+  const prizes = { 1: config.prize1||100000, 2: config.prize2||50000, 3: config.prize3||25000 };
+  const fixed  = pos <= 3 ? prizes[pos] : (config.prize4to10||7500);
+  const pct    = Math.round(wager * (config.pct||2) / 100);
+  return fixed + pct;
+}
+
+function formatARS(n) {
+  return '$' + Math.round(n).toLocaleString('es-AR');
+}
+
+async function loadWagerRace() {
+  const data = await stGet('meta:wagerrace');
+  if(!data) {
+    document.getElementById('wrTable').innerHTML = '<div class="wr-empty">No hay datos esta semana todavía.<br>¡Volvé pronto!</div>';
+    ['wr1name','wr2name','wr3name'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('wrTotalPool').textContent = '$0';
+    document.getElementById('wrTotalPlayers').textContent = '0';
+    return;
+  }
+
+  const players = data.players || [];
+  const config  = data.config  || {};
+  players.sort((a,b) => b.wager - a.wager);
+
+  // Calc total pool
+  let totalPool = 0;
+  players.forEach((p,i) => { totalPool += calcPrize(i+1, p.wager, config); });
+  totalPool = Math.min(totalPool, config.cap || 500000);
+  document.getElementById('wrTotalPool').textContent = formatARS(totalPool);
+  document.getElementById('wrTotalPlayers').textContent = players.length;
+
+  // Top 3
+  const top3 = [players[0], players[1], players[2]];
+  const order = [1, 0, 2]; // silver, gold, bronze display order
+  const ids = ['wr2','wr1','wr3'];
+  order.forEach((idx, i) => {
+    const p = top3[idx];
+    const prefix = ids[i];
+    if(p) {
+      document.getElementById(prefix+'name').textContent   = p.username;
+      document.getElementById(prefix+'wager').textContent  = formatARS(p.wager) + ' apostado';
+      document.getElementById(prefix+'prize').textContent  = formatARS(calcPrize(idx+1, p.wager, config));
+      document.getElementById(prefix+'pct').textContent    = `+${config.pct||2}% del wagger`;
+    } else {
+      document.getElementById(prefix+'name').textContent  = '—';
+      document.getElementById(prefix+'wager').textContent = '$0 apostado';
+      document.getElementById(prefix+'prize').textContent = '$0';
+    }
+  });
+
+  // Table 4-50
+  const rest = players.slice(3, 50);
+  if(!rest.length) {
+    document.getElementById('wrTable').innerHTML = '<div class="wr-empty" style="padding:20px">Sin más posiciones esta semana.</div>';
+    return;
+  }
+
+  let html = '';
+  rest.forEach((p,i) => {
+    const pos = i + 4;
+    const hasPrize = pos <= 10;
+    const prize = hasPrize ? formatARS(calcPrize(pos, p.wager, config)) : '—';
+    const ptsVal = config.pts1150 || 10;
+    const pts = !hasPrize ? `<span style="color:var(--green);font-size:11px;font-weight:600">+${ptsVal} pts</span>` : '';
+
+    // Separator between prize zone and points zone
+    const separator = pos === 11 ? `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 20px;background:var(--bg);border-bottom:1px solid var(--border)">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:11px;color:var(--muted);white-space:nowrap">⭐ Zona de puntos — sin premio en plata</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>` : '';
+
+    html += separator + `
+    <div class="wr-table-row" style="${!hasPrize ? 'opacity:0.7' : ''}">
+      <div class="wr-pos" style="${pos<=3?'':'color:var(--muted)'}">${pos}</div>
+      <div class="wr-name">${p.username}</div>
+      <div class="wr-wager">${formatARS(p.wager)}</div>
+      <div class="wr-prize-cell">${hasPrize ? prize : pts}</div>
+    </div>`;
+  });
+
+  document.getElementById('wrTable').innerHTML = html;
+
+// ── ADMIN ──
+let wrPlayerCount = 0;
+
+function addWrPlayer(name='', wager='') {
+  const container = document.getElementById('wrPlayersInputs');
+  const id = wrPlayerCount++;
+  const div = document.createElement('div');
+  div.className = 'wr-player-input';
+  div.id = 'wrp_'+id;
+  div.innerHTML = `
+    <input placeholder="Username (ej: *****tti)" value="${name}" id="wrpName_${id}"/>
+    <input placeholder="Wagger en ARS" value="${wager}" id="wrpWager_${id}" type="number"/>
+    <button onclick="document.getElementById('wrp_${id}').remove()"
+      style="background:var(--red);color:#fff;border:none;padding:10px;border-radius:6px;cursor:pointer;font-size:13px">✕</button>
+  `;
+  container.appendChild(div);
+}
+
+async function loadWrAdminData() {
+  const data = await stGet('meta:wagerrace');
+  const container = document.getElementById('wrPlayersInputs');
+  container.innerHTML = '';
+  wrPlayerCount = 0;
+  if(data) {
+    const c = data.config || {};
+    document.getElementById('wrPrize1').value     = c.prize1     || 100000;
+    document.getElementById('wrPrize2').value     = c.prize2     || 50000;
+    document.getElementById('wrPrize3').value     = c.prize3     || 25000;
+    document.getElementById('wrPrize4to10').value = c.prize4to10 || 7500;
+    document.getElementById('wrPct').value        = c.pct        || 2;
+    document.getElementById('wrCap').value        = c.cap        || 500000;
+    (data.players || []).forEach(p => addWrPlayer(p.username, p.wager));
+  } else {
+    // Add 3 empty slots by default
+    addWrPlayer(); addWrPlayer(); addWrPlayer();
+  }
+}
+
+async function saveWagerRace() {
+  const msg = document.getElementById('wrAdminMsg');
+  msg.textContent = 'Guardando...'; msg.style.color = 'var(--muted)';
+
+  const config = {
+    prize1:     parseInt(document.getElementById('wrPrize1').value)     || 100000,
+    prize2:     parseInt(document.getElementById('wrPrize2').value)     || 50000,
+    prize3:     parseInt(document.getElementById('wrPrize3').value)     || 25000,
+    prize4to10: parseInt(document.getElementById('wrPrize4to10').value) || 7500,
+    pct:        parseFloat(document.getElementById('wrPct').value)      || 2,
+    cap:        parseInt(document.getElementById('wrCap').value)        || 500000,
+    pts1150:    parseInt(document.getElementById('wrPts1150').value)    || 10,
+  };
+
+  const players = [];
+  document.querySelectorAll('.wr-player-input').forEach(row => {
+    const id    = row.id.replace('wrp_','');
+    const name  = document.getElementById('wrpName_'+id)?.value?.trim();
+    const wager = parseFloat(document.getElementById('wrpWager_'+id)?.value);
+    if(name && wager > 0) players.push({ username: name, wager });
+  });
+
+  await stSet('meta:wagerrace', { config, players, updatedAt: Date.now() });
+  loadWagerRace();
+
+  msg.style.color = 'var(--green)';
+  msg.textContent = `✓ Wager Race publicado con ${players.length} jugadores.`;
+  setTimeout(()=>msg.textContent='', 4000);
 }
 
 // ══════════════════════════════════════════════
