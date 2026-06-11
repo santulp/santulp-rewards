@@ -348,6 +348,8 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
           <div class="wheel-center">🎰</div>
         </div>
         <button id="spinBtn" disabled>GIRAR</button>
+        <div id="wheelRankLabel" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--muted)">🎮 Ruleta Beginner</div>
+        <div id="spinsAvailLabel" style="font-size:12px;color:var(--muted)">1 giro por día</div>
         <div class="code-input-row">
           <input id="codeInput" type="text" placeholder="Código del stream"/>
           <button onclick="verifyCode()">OK</button>
@@ -414,6 +416,10 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
               <div class="user-stat-box">
                 <div class="user-stat-val" id="myCardRank">#—</div>
                 <div class="user-stat-lbl">Posición</div>
+              </div>
+              <div class="user-stat-box">
+                <div class="user-stat-val" id="myCardRankBadge" style="font-size:20px">🎮</div>
+                <div class="user-stat-lbl">Rango viewer</div>
               </div>
               <div class="user-stat-box">
                 <div class="user-stat-val" id="myCardWins">0</div>
@@ -560,7 +566,12 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
 
         <!-- Lista de usuarios (span 2) -->
         <div class="admin-card" style="grid-column:1/-1">
-          <div class="admin-card-title">Usuarios registrados</div>
+          <div class="admin-card-title" style="display:flex;align-items:center;justify-content:space-between">
+            Usuarios registrados
+            <span style="font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">
+              🧪 Modo prueba — podés editar puntos manualmente
+            </span>
+          </div>
           <div class="admin-users-list" id="adminUsersList">
             <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Cargando...</div>
           </div>
@@ -822,20 +833,126 @@ function loginAs(data) {
 
 function updateNavUser() {
   if(!currentUser) return;
+  const rank = getViewerRank(userData.pts||0);
+  const badge = getRankBadge(rank);
   document.getElementById('navAvatar').textContent = initials(currentUser.username);
-  document.getElementById('navUsername').textContent = currentUser.username;
+  document.getElementById('navUsername').innerHTML = currentUser.username + badge;
   document.getElementById('navPts').textContent = (userData.pts||0)+' pts';
   document.getElementById('myBigAvatar').textContent = initials(currentUser.username);
-  document.getElementById('myCardName').textContent = currentUser.username;
+  document.getElementById('myCardName').innerHTML = currentUser.username + ' ' + rank.emoji;
   document.getElementById('myCardKick').textContent = currentUser.username;
   document.getElementById('myCardPts').textContent = userData.pts||0;
   document.getElementById('myCardSpins').textContent = userData.spins||0;
   document.getElementById('myCardWins').textContent = userData.wins||0;
+  // Update rank badge in profile card
+  const rankEl = document.getElementById('myCardRankBadge');
+  if(rankEl) {
+    rankEl.textContent = rank.emoji + ' ' + rank.name;
+    rankEl.style.color = rank.color;
+  }
+  // Update wheel for current rank
+  updateWheelForRank(rank);
+  // Update spin count available
+  checkSpinStatus();
 }
 
 // ══════════════════════════════════════════════
-//  DAILY CODE — auto-generated from date seed
+//  VIEWER RANK SYSTEM
 // ══════════════════════════════════════════════
+const VIEWER_RANKS = [
+  { name:'Legend',   emoji:'👑', min:10000, color:'#C9A84C', glow:'#C9A84C' },
+  { name:'Elite',    emoji:'💎', min:5000,  color:'#00D0FF', glow:'#00D0FF' },
+  { name:'Pro',      emoji:'⚡', min:1500,  color:'#9B59B6', glow:'#9B59B6' },
+  { name:'Regular',  emoji:'🎯', min:500,   color:'#00D084', glow:'#00D084' },
+  { name:'Beginner', emoji:'🎮', min:0,     color:'#6B6B80', glow:'none'    },
+];
+
+function getViewerRank(pts) {
+  return VIEWER_RANKS.find(r => (pts||0) >= r.min) || VIEWER_RANKS[VIEWER_RANKS.length-1];
+}
+
+// Wheel segments per rank
+const WHEEL_SEGMENTS = {
+  Beginner: [
+    { label:'50 PTS',  color:'#1E1E30', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
+    { label:'100 PTS', color:'#2A2A3E', weight:20, pts:100, prize:'100 Puntos 🎮',     desc:'¡Bien! Seguí acumulando.', emoji:'🎮' },
+    { label:'50 PTS',  color:'#1A1A2E', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
+    { label:'200 PTS', color:'#3B3B6B', weight:15, pts:200, prize:'200 Puntos 🎯',     desc:'¡Genial!', emoji:'🎯' },
+    { label:'50 PTS',  color:'#1E1E30', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
+    { label:'100 PTS', color:'#2A2A3E', weight:20, pts:100, prize:'100 Puntos 🎮',     desc:'¡Bien!', emoji:'🎮' },
+    { label:'PREMIO',  color:'#00D084', weight:5,  pts:300, prize:'Premio Beginner 🎉', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'🎉' },
+    { label:'50 PTS',  color:'#1A1A2E', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
+    { label:'200 PTS', color:'#3B3B6B', weight:15, pts:200, prize:'200 Puntos 🎯',     desc:'¡Genial!', emoji:'🎯' },
+    { label:'50 PTS',  color:'#1E1E30', weight:25, pts:50,  prize:'50 Puntos ⭐',      desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
+    { label:'100 PTS', color:'#2A2A3E', weight:20, pts:100, prize:'100 Puntos 🎮',     desc:'¡Bien!', emoji:'🎮' },
+    { label:'JACKPOT', color:'#C9A84C', weight:2,  pts:500, prize:'JACKPOT 🏆',        desc:'¡JACKPOT! Hablá con SantuLP en el stream.', emoji:'🏆' },
+  ],
+  Regular: [
+    { label:'100 PTS', color:'#1E3A2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados a tu cuenta.', emoji:'🎯' },
+    { label:'200 PTS', color:'#2A3E2A', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'¡Buen tiro!', emoji:'⚡' },
+    { label:'100 PTS', color:'#1E3A2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados a tu cuenta.', emoji:'🎯' },
+    { label:'PREMIO',  color:'#00D084', weight:8,  pts:400, prize:'Premio Regular 🎉', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'🎉' },
+    { label:'100 PTS', color:'#1E3A2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados a tu cuenta.', emoji:'🎯' },
+    { label:'300 PTS', color:'#3B6B3B', weight:12, pts:300, prize:'300 Puntos 💎',     desc:'¡Muy bien!', emoji:'💎' },
+    { label:'100 PTS', color:'#2A3E2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados.', emoji:'🎯' },
+    { label:'PREMIO',  color:'#00A86B', weight:8,  pts:400, prize:'Premio Regular 🎉', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'🎉' },
+    { label:'200 PTS', color:'#2A3E2A', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'¡Buen tiro!', emoji:'⚡' },
+    { label:'100 PTS', color:'#1E3A2A', weight:20, pts:100, prize:'100 Puntos 🎯',     desc:'Sumados.', emoji:'🎯' },
+    { label:'300 PTS', color:'#3B6B3B', weight:12, pts:300, prize:'300 Puntos 💎',     desc:'¡Muy bien!', emoji:'💎' },
+    { label:'JACKPOT', color:'#C9A84C', weight:3,  pts:800, prize:'JACKPOT 🏆',        desc:'¡JACKPOT! Hablá con SantuLP en el stream.', emoji:'🏆' },
+  ],
+  Pro: [
+    { label:'200 PTS', color:'#2A1A4E', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
+    { label:'400 PTS', color:'#3B2A6B', weight:14, pts:400, prize:'400 Puntos 💎',     desc:'¡Buen tiro!', emoji:'💎' },
+    { label:'200 PTS', color:'#2A1A4E', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
+    { label:'PREMIO',  color:'#9B59B6', weight:10, pts:600, prize:'Premio Pro ⚡',     desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'⚡' },
+    { label:'200 PTS', color:'#2A1A4E', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
+    { label:'500 PTS', color:'#4B3A7B', weight:10, pts:500, prize:'500 Puntos 👑',     desc:'¡Excelente!', emoji:'👑' },
+    { label:'200 PTS', color:'#3B2A6B', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
+    { label:'PREMIO',  color:'#7B3FA6', weight:10, pts:600, prize:'Premio Pro ⚡',     desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'⚡' },
+    { label:'400 PTS', color:'#3B2A6B', weight:14, pts:400, prize:'400 Puntos 💎',     desc:'¡Buen tiro!', emoji:'💎' },
+    { label:'200 PTS', color:'#2A1A4E', weight:18, pts:200, prize:'200 Puntos ⚡',     desc:'Sumados.', emoji:'⚡' },
+    { label:'500 PTS', color:'#4B3A7B', weight:10, pts:500, prize:'500 Puntos 👑',     desc:'¡Excelente!', emoji:'👑' },
+    { label:'JACKPOT', color:'#C9A84C', weight:4,  pts:1500,prize:'JACKPOT 🏆',        desc:'¡JACKPOT! Hablá con SantuLP en el stream.', emoji:'🏆' },
+  ],
+  Elite: [
+    { label:'300 PTS', color:'#003A4E', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
+    { label:'600 PTS', color:'#004E6B', weight:12, pts:600, prize:'600 Puntos 💎',     desc:'¡Buen tiro!', emoji:'💎' },
+    { label:'300 PTS', color:'#003A4E', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
+    { label:'PREMIO',  color:'#00D0FF', weight:10, pts:800, prize:'Premio Elite 💎',   desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'💎' },
+    { label:'300 PTS', color:'#003A4E', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
+    { label:'800 PTS', color:'#005E7B', weight:8,  pts:800, prize:'800 Puntos 👑',     desc:'¡Excelente!', emoji:'👑' },
+    { label:'300 PTS', color:'#004E6B', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
+    { label:'PREMIO',  color:'#00A0CC', weight:10, pts:800, prize:'Premio Elite 💎',   desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'💎' },
+    { label:'600 PTS', color:'#004E6B', weight:12, pts:600, prize:'600 Puntos 💎',     desc:'¡Buen tiro!', emoji:'💎' },
+    { label:'300 PTS', color:'#003A4E', weight:16, pts:300, prize:'300 Puntos 💎',     desc:'Sumados.', emoji:'💎' },
+    { label:'800 PTS', color:'#005E7B', weight:8,  pts:800, prize:'800 Puntos 👑',     desc:'¡Excelente!', emoji:'👑' },
+    { label:'JACKPOT', color:'#C9A84C', weight:5,  pts:2500,prize:'JACKPOT 🏆',        desc:'¡JACKPOT! Hablá con SantuLP en el stream.', emoji:'🏆' },
+  ],
+  Legend: [
+    { label:'500 PTS', color:'#3A2A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
+    { label:'1000 PTS',color:'#4E3A00', weight:10, pts:1000, prize:'1000 Puntos 👑',   desc:'¡Buen tiro!', emoji:'👑' },
+    { label:'500 PTS', color:'#3A2A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
+    { label:'PREMIO',  color:'#C9A84C', weight:10, pts:1500, prize:'Premio Legend 👑', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'👑' },
+    { label:'500 PTS', color:'#3A2A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
+    { label:'1500 PTS',color:'#5E4A00', weight:8,  pts:1500, prize:'1500 Puntos 💎',   desc:'¡Excelente!', emoji:'💎' },
+    { label:'500 PTS', color:'#4E3A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
+    { label:'PREMIO',  color:'#E0BB60', weight:10, pts:1500, prize:'Premio Legend 👑', desc:'¡Felicitaciones! Hablá con SantuLP en el stream.', emoji:'👑' },
+    { label:'1000 PTS',color:'#4E3A00', weight:10, pts:1000, prize:'1000 Puntos 👑',   desc:'¡Buen tiro!', emoji:'👑' },
+    { label:'500 PTS', color:'#3A2A00', weight:14, pts:500,  prize:'500 Puntos 👑',    desc:'Sumados.', emoji:'👑' },
+    { label:'1500 PTS',color:'#5E4A00', weight:8,  pts:1500, prize:'1500 Puntos 💎',   desc:'¡Excelente!', emoji:'💎' },
+    { label:'JACKPOT', color:'#FF6B00', weight:6,  pts:5000, prize:'JACKPOT LEGEND 🏆',desc:'¡JACKPOT LEGEND! Hablá con SantuLP en el stream.', emoji:'🏆' },
+  ],
+};
+
+function getSegmentsForRank(rank) {
+  return WHEEL_SEGMENTS[rank.name] || WHEEL_SEGMENTS.Beginner;
+}
+
+function getRankBadge(rank) {
+  if(!rank || rank.name === 'Beginner') return '';
+  return `<span style="font-size:14px;margin-left:4px" title="${rank.name}">${rank.emoji}</span>`;
+}
 function getDailyCode() {
   // Generates a deterministic 6-char code (3 letters + 3 numbers) from today's date
   const today = todayStr(); // e.g. "2026-06-10"
@@ -852,27 +969,51 @@ function getDailyCode() {
   const n3 = nums   [(n*17)  % nums.length];
   return `${l1}${l2}${l3}${n1}${n2}${n3}`;
 }
-const segments = [
-  { label:'50 PTS',  color:'#1E1E30', weight:18, pts:50,  prize:'50 Puntos ⭐',     desc:'Puntos sumados a tu cuenta. ¡Seguí mirando para acumular más!', emoji:'⭐' },
-  { label:'MEDIO',   color:'#6B6BFF', weight:10, pts:100, prize:'Premio Medio ✨',  desc:'Buen tiro. Comunicate con SantuLP en el stream para reclamar tu premio.', emoji:'🎉' },
-  { label:'50 PTS',  color:'#2A2A3E', weight:18, pts:50,  prize:'50 Puntos ⭐',     desc:'Puntos sumados a tu cuenta. ¡Seguí mirando para acumular más!', emoji:'⭐' },
-  { label:'GRANDE',  color:'#00D084', weight:6,  pts:200, prize:'Premio Grande 🎉', desc:'¡Muy bien! Comunicate con SantuLP en el stream para reclamar tu premio.', emoji:'🎊' },
-  { label:'50 PTS',  color:'#1A1A2E', weight:18, pts:50,  prize:'50 Puntos ⭐',     desc:'Puntos sumados a tu cuenta. ¡Seguí mirando para acumular más!', emoji:'⭐' },
-  { label:'MEDIO',   color:'#5555DD', weight:10, pts:100, prize:'Premio Medio ✨',  desc:'Buen tiro. Comunicate con SantuLP en el stream para reclamar tu premio.', emoji:'🎉' },
-  { label:'JACKPOT', color:'#C9A84C', weight:3,  pts:500, prize:'Premio Jackpot 🏆',desc:'¡Jackpot! Comunicate con SantuLP en el stream para reclamar tu premio.', emoji:'🏆' },
-  { label:'50 PTS',  color:'#2A2A3E', weight:18, pts:50,  prize:'50 Puntos ⭐',     desc:'Puntos sumados a tu cuenta. ¡Seguí mirando para acumular más!', emoji:'⭐' },
-  { label:'GRANDE',  color:'#00A86B', weight:6,  pts:200, prize:'Premio Grande 🎉', desc:'¡Muy bien! Comunicate con SantuLP en el stream para reclamar tu premio.', emoji:'🎊' },
-  { label:'50 PTS',  color:'#1E1E30', weight:18, pts:50,  prize:'50 Puntos ⭐',     desc:'Puntos sumados a tu cuenta. ¡Seguí mirando para acumular más!', emoji:'⭐' },
-  { label:'MEDIO',   color:'#7766EE', weight:10, pts:100, prize:'Premio Medio ✨',  desc:'Buen tiro. Comunicate con SantuLP en el stream para reclamar tu premio.', emoji:'🎉' },
-  { label:'JACKPOT', color:'#E0BB60', weight:2,  pts:500, prize:'Premio Jackpot 🏆',desc:'¡Jackpot! Comunicate con SantuLP en el stream para reclamar tu premio.', emoji:'🏆' },
-];
-const pool = [];
-segments.forEach((s,i)=>{ for(let j=0;j<s.weight;j++) pool.push(i); });
-
+// ══════════════════════════════════════════════
+//  WHEEL — dynamic per rank
+// ══════════════════════════════════════════════
 const canvas = document.getElementById('wheelCanvas');
 const ctx = canvas.getContext('2d');
 const W=canvas.width, H=canvas.height, R=W/2-10, cx=W/2, cy=H/2;
 let currentAngle = 0;
+let segments = WHEEL_SEGMENTS.Beginner;
+let pool = [];
+
+function buildPool(segs) {
+  pool = [];
+  segs.forEach((s,i)=>{ for(let j=0;j<s.weight;j++) pool.push(i); });
+}
+buildPool(segments);
+
+function updateWheelForRank(rank) {
+  segments = getSegmentsForRank(rank);
+  buildPool(segments);
+  drawWheel(currentAngle);
+  // Update rank label on wheel section
+  const rankLabel = document.getElementById('wheelRankLabel');
+  if(rankLabel) {
+    rankLabel.innerHTML = `${rank.emoji} Ruleta <span style="color:${rank.color}">${rank.name}</span>`;
+  }
+  // Update spins available label
+  const spinsAvail = document.getElementById('spinsAvailLabel');
+  const maxSpins = getMaxSpinsForRank(rank);
+  if(spinsAvail) spinsAvail.textContent = `${maxSpins} giro${maxSpins>1?'s':''} por día`;
+}
+
+function getMaxSpinsForRank(rank) {
+  const spins = { Beginner:1, Regular:2, Pro:3, Elite:4, Legend:5 };
+  return spins[rank.name] || 1;
+}
+
+function getSpinsUsedToday() {
+  const key = 'spinsToday_' + todayStr();
+  return parseInt(localStorage.getItem(key) || '0');
+}
+
+function incrementSpinsToday() {
+  const key = 'spinsToday_' + todayStr();
+  localStorage.setItem(key, getSpinsUsedToday() + 1);
+}
 
 function drawWheel(angle) {
   ctx.clearRect(0,0,W,H);
@@ -884,9 +1025,9 @@ function drawWheel(angle) {
     ctx.strokeStyle='#0A0A0F'; ctx.lineWidth=4; ctx.stroke();
     ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+arc/2);
     ctx.textAlign='right'; ctx.fillStyle='#ffffff';
-    ctx.font='bold 15px Inter,sans-serif';
+    ctx.font='bold 13px Inter,sans-serif';
     ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=5;
-    ctx.fillText(seg.label, R-14, 5); ctx.restore();
+    ctx.fillText(seg.label, R-12, 5); ctx.restore();
   });
   ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
   ctx.strokeStyle='#1E1E2E'; ctx.lineWidth=8; ctx.stroke();
@@ -894,15 +1035,19 @@ function drawWheel(angle) {
 drawWheel(currentAngle);
 
 // ══════════════════════════════════════════════
-//  SPIN LOGIC
+//  DAILY CODE — auto-generated from date seed
 // ══════════════════════════════════════════════
 function checkSpinStatus() {
   if(!userData) return;
-  const alreadySpun = userData.lastSpinDate === todayStr();
+  const rank = getViewerRank(userData.pts||0);
+  const maxSpins = getMaxSpinsForRank(rank);
+  const usedSpins = getSpinsUsedToday();
   const btn = document.getElementById('spinBtn');
-  if(alreadySpun) {
+  const remaining = maxSpins - usedSpins;
+
+  if(remaining <= 0) {
     btn.disabled = true;
-    document.getElementById('verifyMsg').textContent = '✓ Ya giraste hoy. Volvé mañana.';
+    document.getElementById('verifyMsg').textContent = `Ya usaste tus ${maxSpins} giro${maxSpins>1?'s':''} de hoy. Volvé mañana.`;
     document.getElementById('verifyMsg').style.color = 'var(--muted)';
   } else {
     btn.disabled = !codeVerified;
@@ -916,9 +1061,12 @@ async function verifyCode() {
 
   const today = todayStr();
   const correctCode = getDailyCode();
+  const rank = getViewerRank(userData.pts||0);
+  const maxSpins = getMaxSpinsForRank(rank);
+  const usedSpins = getSpinsUsedToday();
 
-  if(userData.lastSpinDate === today) {
-    msg.style.color='var(--muted)'; msg.textContent='Ya usaste el giro de hoy. Volvé mañana.'; return;
+  if(usedSpins >= maxSpins) {
+    msg.style.color='var(--muted)'; msg.textContent=`Ya usaste tus ${maxSpins} giros de hoy. Volvé mañana.`; return;
   }
 
   if(val !== correctCode) {
@@ -926,13 +1074,16 @@ async function verifyCode() {
   }
 
   codeVerified = true;
-  msg.style.color='var(--green)'; msg.textContent='✓ Código válido — ¡girá la ruleta!';
+  const remaining = maxSpins - usedSpins;
+  msg.style.color='var(--green)'; msg.textContent=`✓ Código válido — te quedan ${remaining} giro${remaining>1?'s':''}!`;
   document.getElementById('spinBtn').disabled = false;
 }
 
 document.getElementById('spinBtn').addEventListener('click', async ()=>{
   if(!codeVerified || spinning) return;
-  if(userData.lastSpinDate === todayStr()) return;
+  const rank = getViewerRank(userData.pts||0);
+  const maxSpins = getMaxSpinsForRank(rank);
+  if(getSpinsUsedToday() >= maxSpins) return;
   spinning=true;
   document.getElementById('spinBtn').disabled=true;
 
@@ -960,26 +1111,27 @@ document.getElementById('spinBtn').addEventListener('click', async ()=>{
 });
 
 async function onSpinComplete(seg) {
-  // Update user data
   userData.pts         = (userData.pts||0) + seg.pts;
   userData.spins       = (userData.spins||0) + 1;
   userData.lastSpinDate = todayStr();
   if(seg.pts >= 100) userData.wins = (userData.wins||0) + 1;
 
+  incrementSpinsToday();
   await stSet('user:'+currentUser.username, userData, true);
 
-  // Update global spins today counter
   const todayKey = 'spins:'+todayStr().replace(/ /g,'-');
   const todaySpins = (await stGet(todayKey, true)) || 0;
   await stSet(todayKey, todaySpins+1, true);
 
+  // Check rank up
+  const newRank = getViewerRank(userData.pts||0);
   updateNavUser();
   updateMyCard();
   loadStats();
+  loadRanking();
 
-  // Show modal
   document.getElementById('modalEmoji').textContent  = seg.emoji;
-  document.getElementById('modalTitle').textContent  = seg.pts>=200 ? '¡GANASTE!' : seg.pts>=100 ? '¡BIEN!' : '¡SUMASTE!';
+  document.getElementById('modalTitle').textContent  = seg.pts>=1000 ? '¡JACKPOT!' : seg.pts>=400 ? '¡GANASTE!' : seg.pts>=200 ? '¡BIEN!' : '¡SUMASTE!';
   document.getElementById('modalPrize').textContent  = seg.prize;
   document.getElementById('modalDesc').textContent   = seg.desc;
   document.getElementById('modalOverlay').classList.add('show');
@@ -1035,9 +1187,11 @@ async function loadRanking() {
     const posClass = pos===1?'top1':pos===2?'top2':pos===3?'top3':'';
     const isMe = u.username === currentUser.username;
     const displayName = isMe ? u.username : maskName(u.username);
+    const rank = getViewerRank(u.pts||0);
+    const badge = rank.name !== 'Beginner' ? `<span style="font-size:13px;margin-left:4px">${rank.emoji}</span>` : '';
     return `<div class="ranking-row${isMe?' me':''}">
       <div class="rank-pos ${posClass}">${pos===1?'🥇':pos===2?'🥈':pos===3?'🥉':pos}</div>
-      <div class="rank-name">${displayName}${isMe?'<span class="rank-you">VOS</span>':''}</div>
+      <div class="rank-name">${displayName}${badge}${isMe?'<span class="rank-you">VOS</span>':''}</div>
       <div class="rank-pts">${(u.pts||0).toLocaleString('es-AR')}</div>
     </div>`;
   }).join('');
@@ -1101,14 +1255,41 @@ async function loadAdminData() {
   users.sort((a,b)=>(b.pts||0)-(a.pts||0));
   const ul = document.getElementById('adminUsersList');
   if(!users.length){ ul.innerHTML='<div style="color:var(--muted);text-align:center;padding:20px;font-size:13px">Sin usuarios registrados.</div>'; return; }
-  ul.innerHTML = users.map((u,i)=>`
-    <div class="admin-user-row">
-      <div style="color:var(--muted);font-size:12px;width:28px">#${i+1}</div>
-      <div class="admin-user-name">${u.username}</div>
-      <div class="admin-user-pts">${(u.pts||0).toLocaleString('es-AR')} pts</div>
-      <div class="admin-user-spins">${u.spins||0} giros</div>
-      <div style="font-size:11px;color:var(--muted)">${u.lastSpinDate===todayStr()?'<span style="color:var(--green)">✓ hoy</span>':'sin giro hoy'}</div>
-    </div>`).join('');
+  ul.innerHTML = users.map((u,i)=>{
+    const rank = getViewerRank(u.pts||0);
+    const nextRank = VIEWER_RANKS.slice().reverse().find(r => r.min > (u.pts||0));
+    const ptsToNext = nextRank ? nextRank.min - (u.pts||0) : 0;
+    const progressPct = nextRank
+      ? Math.round(((u.pts||0) - rank.min) / (nextRank.min - rank.min) * 100)
+      : 100;
+    return `
+    <div class="admin-user-row" style="flex-direction:column;align-items:stretch;gap:10px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="color:var(--muted);font-size:12px;width:28px">#${i+1}</div>
+        <div style="font-size:20px">${rank.emoji}</div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:14px">${u.username}</div>
+          <div style="font-size:11px;color:${rank.color};font-weight:600">${rank.name}${nextRank ? ` → ${ptsToNext} pts para ${nextRank.name}` : ' (MÁXIMO)'}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="admin-user-pts">${(u.pts||0).toLocaleString('es-AR')} pts</div>
+          <div class="admin-user-spins">${u.spins||0} giros · ${getMaxSpinsForRank(rank)} max/día</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted)">${u.lastSpinDate===todayStr()?'<span style="color:var(--green)">✓ giró hoy</span>':'sin giro hoy'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:${progressPct}%;background:${rank.color};border-radius:2px;transition:width .3s"></div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button onclick="adminAddPts('${u.username}', 100)" style="background:var(--green-dim);border:1px solid var(--green);color:var(--green);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">+100</button>
+          <button onclick="adminAddPts('${u.username}', 500)" style="background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">+500</button>
+          <button onclick="adminAddPts('${u.username}', 1000)" style="background:#FF475722;border:1px solid var(--red);color:var(--red);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">+1000</button>
+          <button onclick="adminSetPts('${u.username}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">✏️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function copyAdminCode() {
@@ -1120,12 +1301,45 @@ function copyAdminCode() {
   });
 }
 
+async function adminAddPts(username, amount) {
+  const u = await stGet('user:'+username, true);
+  if(!u) return;
+  u.pts = (u.pts||0) + amount;
+  await stSet('user:'+username, u, true);
+  // If this is the current user, update live
+  if(currentUser && currentUser.username === username) {
+    userData.pts = u.pts;
+    updateNavUser();
+    updateMyCard();
+  }
+  showToast(`✓ +${amount} pts a ${username}`);
+  setTimeout(()=>loadAdminData(), 400);
+}
+
+async function adminSetPts(username) {
+  const val = prompt(`Puntos para ${username}:`);
+  if(val === null || val === '') return;
+  const pts = parseInt(val);
+  if(isNaN(pts) || pts < 0) { alert('Número inválido'); return; }
+  const u = await stGet('user:'+username, true);
+  if(!u) return;
+  u.pts = pts;
+  await stSet('user:'+username, u, true);
+  if(currentUser && currentUser.username === username) {
+    userData.pts = pts;
+    updateNavUser();
+    updateMyCard();
+  }
+  showToast(`✓ ${username} → ${pts} pts`);
+  setTimeout(()=>loadAdminData(), 400);
+}
+
 // ══════════════════════════════════════════════
 //  VIEWING POINTS — 10 pts cada 10 min en vivo
 // ══════════════════════════════════════════════
 const SANTULP_KICK_ID = 4251385;
 const VIEWING_INTERVAL_MS = 10 * 60 * 1000; // 10 minutos
-const VIEWING_PTS = 10;
+const VIEWING_PTS = 4; // ~25 pts por hora (cada 10 min)
 let viewingTimer = null;
 
 function startViewingTimer() {
@@ -1144,11 +1358,11 @@ async function checkAndAwardViewingPoints() {
     // Award points
     userData.pts = (userData.pts || 0) + VIEWING_PTS;
     await stSet('user:' + currentUser.username, userData, true);
+    const rank = getViewerRank(userData.pts);
     updateNavUser();
     updateMyCard();
 
-    // Show toast notification
-    showToast(`+${VIEWING_PTS} pts por ver el stream 📺`);
+    showToast(`+${VIEWING_PTS} pts por ver el stream 📺 ${rank.emoji} ${rank.name}`);
   } catch(e) {
     console.log('Live check failed:', e);
   }
