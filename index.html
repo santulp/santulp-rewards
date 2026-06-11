@@ -509,7 +509,10 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     <!-- Admin login -->
     <div id="adminLoginBox" class="admin-card" style="max-width:380px">
       <div class="admin-card-title">Acceso administrador</div>
-      <input class="admin-input" type="password" id="adminPassInput" placeholder="CONTRASEÑA" style="font-family:'Inter',sans-serif;font-size:16px;letter-spacing:1px"/>
+      <div style="position:relative;width:100%">
+  <input class="admin-input" type="password" id="adminPassInput" placeholder="CONTRASEÑA" style="padding-right:48px"/>
+  <span onclick="toggleAdminPass()" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:18px;user-select:none" id="adminPassEye">👁️</span>
+</div> style="font-family:'Inter',sans-serif;font-size:16px;letter-spacing:1px"/>
       <button class="admin-btn btn-green" onclick="adminLogin()">ENTRAR</button>
       <div class="admin-msg" id="adminLoginMsg"></div>
     </div>
@@ -1208,7 +1211,17 @@ document.getElementById('copyCodeBtn').addEventListener('click', ()=>{
 });
 
 document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-document.getElementById('adminPassInput').addEventListener('keydown', e=>{ if(e.key==='Enter') adminLogin(); });
+function toggleAdminPass() {
+  const input = document.getElementById('adminPassInput');
+  const eye = document.getElementById('adminPassEye');
+  if(input.type === 'password') {
+    input.type = 'text';
+    eye.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    eye.textContent = '👁️';
+  }
+}
 </script>
 </body>
 </html>
