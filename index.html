@@ -1023,7 +1023,7 @@ async function handleOAuthCallback() {
   // For this single-file app we use a minimal proxy approach via the token endpoint.
   try {
     const verifier = sessionStorage.getItem('pkce_verifier');
-    const tokenRes = await fetch('/.netlify/functions/kick-token', {
+    const tokenRes = await fetch('/api/kick-token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
