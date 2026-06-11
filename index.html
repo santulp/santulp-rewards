@@ -257,6 +257,46 @@ canvas#wheelCanvas{width:380px;height:380px;border-radius:50%;position:relative;
   border-radius:6px;width:100%;transition:all .2s}
 .modal-close:hover{background:#00f09a}
 
+/* ── SPORTS PREDICTIONS ── */
+.sp-section{padding:80px 24px;max-width:1080px;margin:0 auto}
+.sp-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.sp-tab{padding:8px 16px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;
+  font-family:'Inter',sans-serif;transition:all .2s;white-space:nowrap}
+.sp-tab:hover{border-color:var(--green);color:var(--green)}
+.sp-tab.active{background:var(--green);color:#0A0A0F;border-color:var(--green)}
+.sp-games{display:flex;flex-direction:column;gap:12px}
+.sp-game{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s}
+.sp-game:hover{border-color:var(--border2)}
+.sp-game-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer}
+.sp-teams{flex:1}
+.sp-team{font-size:15px;font-weight:600;margin-bottom:4px}
+.sp-time{font-size:11px;color:var(--muted)}
+.sp-odds{display:flex;gap:8px;flex-shrink:0}
+.sp-odd-btn{padding:8px 14px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg);cursor:pointer;text-align:center;transition:all .2s;min-width:64px}
+.sp-odd-btn:hover{border-color:var(--gold);background:var(--gold-dim)}
+.sp-odd-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.sp-odd-val{font-size:15px;font-weight:700;color:var(--gold)}
+.sp-game-body{display:none;padding:0 20px 20px;border-top:1px solid var(--border)}
+.sp-game-body.open{display:block}
+.sp-ai-btn{display:flex;align-items:center;gap:8px;background:var(--green-dim);
+  border:1px solid var(--green);color:var(--green);padding:10px 18px;border-radius:7px;
+  cursor:pointer;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;
+  transition:all .2s;margin-top:16px}
+.sp-ai-btn:hover{background:var(--green);color:#0A0A0F}
+.sp-ai-result{margin-top:14px;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;padding:16px;font-size:14px;line-height:1.7;color:var(--text);display:none}
+.sp-ai-result.show{display:block}
+.sp-loading{text-align:center;padding:48px;color:var(--muted);font-size:14px}
+.sp-empty{text-align:center;padding:48px;color:var(--muted)}
+.sp-stake-btn{display:inline-flex;align-items:center;gap:8px;margin-top:12px;
+  background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);
+  padding:8px 16px;border-radius:6px;font-size:12px;font-weight:700;
+  text-decoration:none;font-family:'Inter',sans-serif;transition:all .2s}
+.sp-stake-btn:hover{background:var(--gold);color:#0A0A0F}
+.sp-refresh{font-size:11px;color:var(--muted);text-align:right;margin-bottom:8px}
+
 /* ── WAGER RACE ── */
 .wr-hero{text-align:center;padding:60px 24px 40px;position:relative;overflow:hidden}
 .wr-hero::before{content:'';position:absolute;inset:0;
@@ -386,6 +426,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     <div class="hero-actions">
       <a onclick="scrollToSection('ruleta')" class="btn-primary" style="cursor:pointer">Tirar la ruleta</a>
       <a onclick="scrollToSection('ranking')" class="btn-outline" style="cursor:pointer">Ver ranking</a>
+      <a onclick="scrollToSection('sports')" class="btn-outline" style="cursor:pointer;border-color:var(--green);color:var(--green)">⚽ Predicciones</a>
       <a onclick="scrollToSection('wagerrace')" class="btn-outline" style="cursor:pointer;border-color:var(--gold);color:var(--gold)">🏁 Wager Race</a>
     </div>
     <div class="stats-bar">
@@ -547,6 +588,24 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     </div>
     <br>
     <a href="https://pba.stake.bet.ar/?c=STAKELP&offer=stakelp" class="btn-primary" target="_blank">Ir a Stake Argentina →</a>
+  </section>
+
+  <!-- SPORTS PREDICTIONS -->
+  <section id="sports" class="section-border">
+    <div class="sp-section">
+      <div class="sec-eye">IA + Cuotas en vivo</div>
+      <h2 class="sec-title">PREDICCIONES<br><span style="color:var(--green)">DEL DÍA</span></h2>
+      <p class="sec-sub">Cuotas en tiempo real de los mejores eventos del día, con análisis de inteligencia artificial. Apostá con más info en Stake Argentina.</p>
+
+      <div class="sp-tabs" id="spTabs">
+        <button class="sp-tab active" onclick="filterSport('all')">🌐 Todos</button>
+      </div>
+
+      <div class="sp-refresh" id="spRefresh"></div>
+      <div class="sp-games" id="spGames">
+        <div class="sp-loading">⚽ Cargando partidos del día...</div>
+      </div>
+    </div>
   </section>
 
   <!-- WAGER RACE -->
@@ -1115,7 +1174,8 @@ function loginAs(data) {
       setInterval(updateLiveStatus, 2 * 60 * 1000);
       loadWagerRace();
       updateWrTimer();
-      setInterval(updateWrTimer, 1000); // actualiza estado en vivo cada 2 min
+      setInterval(updateWrTimer, 1000);
+      loadSportsData(); // actualiza estado en vivo cada 2 min
     }, 250);
   }, 1000);
 }
@@ -1804,6 +1864,166 @@ function showToast(msg) {
     toast.style.animation = 'viewExit .3s ease forwards';
     setTimeout(()=>toast.remove(), 300);
   }, 3500);
+}
+
+// ══════════════════════════════════════════════
+//  SPORTS PREDICTIONS
+// ══════════════════════════════════════════════
+let allSportsData = [];
+let activeSportFilter = 'all';
+
+function formatOddsTime(isoDate) {
+  const d = new Date(isoDate);
+  return d.toLocaleDateString('es-AR', { weekday:'short', day:'numeric', month:'short' }) +
+    ' ' + d.toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+}
+
+function getBestOdds(game) {
+  if(!game.bookmakers || !game.bookmakers.length) return null;
+  const bk = game.bookmakers[0];
+  const h2h = bk.markets?.find(m => m.key === 'h2h');
+  if(!h2h) return null;
+  return h2h.outcomes;
+}
+
+function renderSportsGames(sports) {
+  const tabs = document.getElementById('spTabs');
+  const gamesDiv = document.getElementById('spGames');
+  const refresh = document.getElementById('spRefresh');
+
+  // Build tabs
+  let tabsHtml = '<button class="sp-tab ' + (activeSportFilter==='all'?'active':'') + '" onclick="filterSport(\'all\')">🌐 Todos</button>';
+  sports.forEach(s => {
+    const active = activeSportFilter === s.key ? 'active' : '';
+    tabsHtml += `<button class="sp-tab ${active}" onclick="filterSport('${s.key}')">${s.emoji} ${s.name}</button>`;
+  });
+  tabs.innerHTML = tabsHtml;
+
+  // Filter
+  const filtered = activeSportFilter === 'all'
+    ? sports.flatMap(s => (s.games||[]).map(g => ({ ...g, _sport: s })))
+    : (sports.find(s => s.key === activeSportFilter)?.games || []).map(g => ({ ...g, _sport: sports.find(s => s.key === activeSportFilter) }));
+
+  if(!filtered.length) {
+    gamesDiv.innerHTML = '<div class="sp-empty">No hay eventos disponibles ahora mismo.<br>Volvé más tarde o elegí otro deporte.</div>';
+    return;
+  }
+
+  // Sort by time
+  filtered.sort((a,b) => new Date(a.commence_time) - new Date(b.commence_time));
+
+  // Refresh time
+  if(sports[0]?.cached_at) {
+    const age = Math.round((new Date() - new Date(sports[0].cached_at)) / 60000);
+    refresh.textContent = `Actualizado hace ${age} min`;
+  }
+
+  gamesDiv.innerHTML = filtered.slice(0,20).map((game, i) => {
+    const odds = getBestOdds(game);
+    const oddsHtml = odds ? odds.map(o => `
+      <div class="sp-odd-btn" onclick="event.stopPropagation()">
+        <div class="sp-odd-label">${o.name.length > 6 ? o.name.slice(0,6)+'...' : o.name}</div>
+        <div class="sp-odd-val">${o.price.toFixed(2)}</div>
+      </div>`).join('') : '<span style="color:var(--muted);font-size:12px">Sin cuotas</span>';
+
+    const teams = game.home_team && game.away_team
+      ? `<div class="sp-team">${game.away_team}</div><div class="sp-team" style="color:var(--muted)">vs ${game.home_team}</div>`
+      : `<div class="sp-team">${game.home_team || '—'}</div>`;
+
+    return `
+    <div class="sp-game" id="spgame_${i}">
+      <div class="sp-game-header" onclick="toggleGame(${i})">
+        <div class="sp-teams">
+          ${teams}
+          <div class="sp-time">${game._sport.emoji} ${game._sport.name} · ${formatOddsTime(game.commence_time)}</div>
+        </div>
+        <div class="sp-odds">${oddsHtml}</div>
+      </div>
+      <div class="sp-game-body" id="spbody_${i}">
+        <a href="https://pba.stake.bet.ar/?c=STAKELP&offer=stakelp" target="_blank" class="sp-stake-btn">
+          🎰 Apostar en Stake Argentina
+        </a>
+        <button class="sp-ai-btn" onclick="getAIPrediction(${i}, '${(game.away_team||'').replace(/'/g,"\\'")}', '${(game.home_team||'').replace(/'/g,"\\'")}', '${game._sport.name}', ${JSON.stringify(odds||[]).replace(/"/g,"'")})">
+          ✨ Analizar con IA
+        </button>
+        <div class="sp-ai-result" id="spai_${i}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleGame(i) {
+  const body = document.getElementById('spbody_' + i);
+  body.classList.toggle('open');
+}
+
+function filterSport(key) {
+  activeSportFilter = key;
+  renderSportsGames(allSportsData);
+}
+
+async function getAIPrediction(i, away, home, sport, odds) {
+  const btn = document.querySelector(`#spgame_${i} .sp-ai-btn`);
+  const result = document.getElementById('spai_' + i);
+  btn.textContent = '⏳ Analizando...';
+  btn.disabled = true;
+  result.classList.add('show');
+  result.textContent = 'La IA está analizando el partido...';
+
+  const oddsText = Array.isArray(odds) ? odds.map(o => `${o.name}: ${o.price}`).join(', ') : 'No disponibles';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        messages: [{
+          role: 'user',
+          content: `Sos un analista deportivo experto. Analizá este partido de ${sport}: ${away} vs ${home}. 
+Cuotas actuales: ${oddsText}.
+Dá un análisis breve (máx 200 palabras) con:
+1. Contexto del partido
+2. Cuál es el favorito según las cuotas
+3. Tu recomendación de apuesta con razonamiento
+4. Nivel de confianza (Bajo/Medio/Alto)
+Respondé en español, de forma directa y útil para alguien que va a apostar.`
+        }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || 'No se pudo obtener el análisis.';
+    result.innerHTML = text.replace(/\n/g, '<br>');
+  } catch(e) {
+    result.textContent = 'Error al conectar con la IA. Intentá de nuevo.';
+  }
+  btn.textContent = '✨ Analizar con IA';
+  btn.disabled = false;
+}
+
+async function loadSportsData() {
+  try {
+    const res = await fetch('/api/get-odds');
+    const data = await res.json();
+    if(data.ok && data.sports?.length) {
+      allSportsData = data.sports;
+      renderSportsGames(allSportsData);
+    } else {
+      // Try to refresh cache
+      await fetch('/api/fetch-odds');
+      const res2 = await fetch('/api/get-odds');
+      const data2 = await res2.json();
+      if(data2.ok && data2.sports?.length) {
+        allSportsData = data2.sports;
+        renderSportsGames(allSportsData);
+      } else {
+        document.getElementById('spGames').innerHTML = '<div class="sp-empty">No hay datos disponibles ahora. Volvé en unos minutos.</div>';
+      }
+    }
+  } catch(e) {
+    document.getElementById('spGames').innerHTML = '<div class="sp-empty">Error cargando los partidos. Intentá refrescar la página.</div>';
+  }
 }
 
 // ══════════════════════════════════════════════
