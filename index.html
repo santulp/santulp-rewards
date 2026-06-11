@@ -1559,7 +1559,7 @@ async function loadAdminData() {
         <div style="font-size:20px">${rank.emoji}</div>
         <div style="flex:1">
           <div style="font-weight:600;font-size:14px">${u.username}</div>
-          <div style="font-size:11px;color:${rank.color};font-weight:600">${rank.name}${nextRank ? ` → ${ptsToNext} pts para ${nextRank.name}` : ' (MÁXIMO)'}</div>
+          <div style="font-size:11px;color:${rank.color};font-weight:600">${rank.name}${nextRank ? ' \u2192 ' + ptsToNext + ' pts para ' + nextRank.name : ' (M\u00c1XIMO)'}</div>
         </div>
         <div style="text-align:right">
           <div class="admin-user-pts">${(u.pts||0).toLocaleString('es-AR')} pts</div>
@@ -1811,6 +1811,7 @@ async function loadWagerRace() {
   });
 
   document.getElementById('wrTable').innerHTML = html;
+}
 
 // ── ADMIN ──
 let wrPlayerCount = 0;
@@ -1899,7 +1900,7 @@ document.getElementById('copyCodeBtn').addEventListener('click', ()=>{
   });
 });
 
-
+document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 function toggleAdminPass() {
   const input = document.getElementById('adminPassInput');
   const eye   = document.getElementById('adminPassEye');
