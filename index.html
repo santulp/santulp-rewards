@@ -384,9 +384,9 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     <h1>VER EL<br>STREAM<br><em>PAGA.</em></h1>
     <p class="hero-sub">Mirá el stream de SantuLP en Kick, agarrá el código del día y tirá la ruleta para ganar puntos y premios en Stake Argentina.</p>
     <div class="hero-actions">
-      <a onclick="document.getElementById('mainView').scrollTo({top:document.getElementById('ruleta').offsetTop-70,behavior:'smooth'})" class="btn-primary" style="cursor:pointer">Tirar la ruleta</a>
-      <a onclick="showRanking()" class="btn-outline" style="cursor:pointer">Ver ranking</a>
-      <a onclick="document.getElementById('mainView').scrollTo({top:document.getElementById('wagerrace').offsetTop-70,behavior:'smooth'})" class="btn-outline" style="cursor:pointer;border-color:var(--gold);color:var(--gold)">🏁 Wager Race</a>
+      <a onclick="scrollToSection('ruleta')" class="btn-primary" style="cursor:pointer">Tirar la ruleta</a>
+      <a onclick="scrollToSection('ranking')" class="btn-outline" style="cursor:pointer">Ver ranking</a>
+      <a onclick="scrollToSection('wagerrace')" class="btn-outline" style="cursor:pointer;border-color:var(--gold);color:var(--gold)">🏁 Wager Race</a>
     </div>
     <div class="stats-bar">
       <div class="stat"><div class="stat-num" id="statUsers">—</div><div class="stat-label">Jugadores</div></div>
@@ -1255,6 +1255,7 @@ function getMaxSpinsForRank(rank) {
 }
 
 function getSpinsUsedToday() {
+  if(currentUser && currentUser.username === 'santulp') return 0; // admin siempre puede girar
   const key = 'spinsToday_' + todayStr();
   return parseInt(localStorage.getItem(key) || '0');
 }
@@ -1590,9 +1591,15 @@ async function loadRanking() {
   }).join('');
 }
 
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const top = el.getBoundingClientRect().top + window.pageYOffset - 80;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
 function showRanking() {
-  const el = document.getElementById('ranking');
-  window.scrollTo({top: el.offsetTop - 70, behavior:'smooth'});
+  scrollToSection('ranking');
   loadRanking();
 }
 
@@ -1607,7 +1614,7 @@ function showAdmin() {
 }
 
 function goBack() { showView('mainView'); }
-function scrollToTop() { window.scrollTo(0,0); }
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
 function adminLogin() {
   const pass = document.getElementById('adminPassInput').value;
