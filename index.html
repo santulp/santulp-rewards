@@ -595,34 +595,88 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
 
 <script>
 // ══════════════════════════════════════════════
-//  STORAGE HELPERS — Netlify Blobs via serverless function
+//  SUPABASE CONFIG
 // ══════════════════════════════════════════════
-async function dbCall(action, key, value) {
-  const res = await fetch('/api/db', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action, key, value })
+const SUPA_URL = 'https://ayhoefdgcrgyryrufazr.supabase.co';
+const SUPA_KEY = 'sb_publishable_3JGuVqHh0bhEDX3FUMq3vQ_-F5dtw9E';
+
+async function supaGet(username) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/users?username=eq.${encodeURIComponent(username)}&limit=1`, {
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
   });
-  return res.json();
+  const data = await res.json();
+  return data && data[0] ? data[0] : null;
 }
 
+async function supaUpsert(userObj) {
+  await fetch(`${SUPA_URL}/rest/v1/users`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify(userObj)
+  });
+}
+
+async function supaList() {
+  const res = await fetch(`${SUPA_URL}/rest/v1/users?order=pts.desc&limit=100`, {
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
+  });
+  return await res.json() || [];
+}
+
+async function supaGetMeta(key) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/meta?key=eq.${encodeURIComponent(key)}&limit=1`, {
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
+  });
+  const data = await res.json();
+  return data && data[0] ? data[0].value : null;
+}
+
+async function supaSetMeta(key, value) {
+  await fetch(`${SUPA_URL}/rest/v1/meta`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify({ key, value })
+  });
+}
+
+// Compatibility wrappers
 async function stGet(key) {
-  const r = await dbCall('get', key);
-  return r.ok ? r.value : null;
+  if(key.startsWith('user:')) return supaGet(key.replace('user:',''));
+  return supaGetMeta(key);
 }
 
 async function stSet(key, val) {
-  await dbCall('set', key, val);
+  if(key.startsWith('user:')) return supaUpsert(val);
+  return supaSetMeta(key, val);
 }
 
 async function stList(prefix) {
-  const r = await dbCall('list', prefix);
-  return r.ok ? r.keys : [];
+  if(prefix === 'user:') {
+    const users = await supaList();
+    return users.map(u => 'user:'+u.username);
+  }
+  return [];
 }
 
 async function stGetMany(keys) {
-  const r = await dbCall('getMany', null, keys);
-  return r.ok ? r.values : {};
+  const usernames = keys.filter(k=>k.startsWith('user:')).map(k=>k.replace('user:',''));
+  const res = await fetch(`${SUPA_URL}/rest/v1/users?username=in.(${usernames.map(u=>encodeURIComponent(u)).join(',')})&order=pts.desc`, {
+    headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
+  });
+  const data = await res.json() || [];
+  const result = {};
+  data.forEach(u => result['user:'+u.username] = u);
+  return result;
 }
 
 // ══════════════════════════════════════════════
