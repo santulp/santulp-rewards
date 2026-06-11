@@ -605,11 +605,28 @@ async function supaGet(username) {
     headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
   });
   const data = await res.json();
-  return data && data[0] ? data[0] : null;
+  if(!data || !data[0]) return null;
+  const u = data[0];
+  return {
+    username:      u.username,
+    kickId:        u.kickID || '',
+    pts:           u.pts || 0,
+    spins:         u.spins || 0,
+    wins:          u.wins || 0,
+    lastSpinDate:  u.lastspindate || ''
+  };
 }
 
 async function supaUpsert(userObj) {
-  await fetch(`${SUPA_URL}/rest/v1/users`, {
+  const row = {
+    username:      userObj.username,
+    kickID:        userObj.kickId || userObj.kickID || '',
+    pts:           userObj.pts || 0,
+    spins:         userObj.spins || 0,
+    wins:          userObj.wins || 0,
+    lastspindate:  userObj.lastSpinDate || userObj.lastspindate || ''
+  };
+  const res = await fetch(`${SUPA_URL}/rest/v1/users`, {
     method: 'POST',
     headers: {
       'apikey': SUPA_KEY,
@@ -617,15 +634,24 @@ async function supaUpsert(userObj) {
       'Content-Type': 'application/json',
       'Prefer': 'resolution=merge-duplicates'
     },
-    body: JSON.stringify(userObj)
+    body: JSON.stringify(row)
   });
+  if(!res.ok) console.error('supaUpsert error:', await res.text());
 }
 
 async function supaList() {
   const res = await fetch(`${SUPA_URL}/rest/v1/users?order=pts.desc&limit=100`, {
     headers: { 'apikey': SUPA_KEY, 'Authorization': `Bearer ${SUPA_KEY}` }
   });
-  return await res.json() || [];
+  const data = await res.json() || [];
+  return data.map(u => ({
+    username:     u.username,
+    kickId:       u.kickID || '',
+    pts:          u.pts || 0,
+    spins:        u.spins || 0,
+    wins:         u.wins || 0,
+    lastSpinDate: u.lastspindate || ''
+  }));
 }
 
 async function supaGetMeta(key) {
@@ -675,7 +701,16 @@ async function stGetMany(keys) {
   });
   const data = await res.json() || [];
   const result = {};
-  data.forEach(u => result['user:'+u.username] = u);
+  data.forEach(u => {
+    result['user:'+u.username] = {
+      username:     u.username,
+      kickId:       u.kickID || '',
+      pts:          u.pts || 0,
+      spins:        u.spins || 0,
+      wins:         u.wins || 0,
+      lastSpinDate: u.lastspindate || ''
+    };
+  });
   return result;
 }
 
