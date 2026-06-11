@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .view.active{display:block}
 
 /* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;
+nav{position:fixed;top:0;left:0;right:0;z-index:49;/* below auth/admin overlays (z-index:50) */
   display:flex;align-items:center;justify-content:space-between;
   padding:16px 40px;background:rgba(10,10,15,0.9);
   backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
@@ -1753,7 +1753,7 @@ function startViewingTimer() {
 async function checkAndAwardViewingPoints() {
   if(!currentUser) return;
   try {
-    const res = await fetch(`/.netlify/functions/check-live`);
+    const res = await fetch(`/api/check-live`);
     if(!res.ok) return;
     const data = await res.json();
     if(!data.isLive) return;
@@ -1773,7 +1773,7 @@ async function checkAndAwardViewingPoints() {
 
 async function updateLiveStatus() {
   try {
-    const res = await fetch('/.netlify/functions/check-live');
+    const res = await fetch('/api/check-live');
     if(!res.ok) return;
     const data = await res.json();
     const dot = document.querySelector('.live-dot');
