@@ -259,44 +259,56 @@ canvas#wheelCanvas{width:380px;height:380px;border-radius:50%;position:relative;
 
 /* ── SPORTS PREDICTIONS ── */
 .sp-section{padding:80px 24px;max-width:1080px;margin:0 auto}
-.sp-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
-.sp-tab{padding:8px 16px;border-radius:20px;border:1px solid var(--border);
-  background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;
+.sp-hero-bar{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px}
+.sp-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.sp-tab{padding:7px 14px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:600;
   font-family:'Inter',sans-serif;transition:all .2s;white-space:nowrap}
 .sp-tab:hover{border-color:var(--green);color:var(--green)}
 .sp-tab.active{background:var(--green);color:#0A0A0F;border-color:var(--green)}
-.sp-games{display:flex;flex-direction:column;gap:12px}
-.sp-game{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s}
-.sp-game:hover{border-color:var(--green);box-shadow:0 0 16px #00D08415}
-.sp-game-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
-.sp-teams{flex:1}
-.sp-team{font-size:15px;font-weight:600;margin-bottom:4px}
-.sp-time{font-size:11px;color:var(--muted)}
-.sp-odds{display:flex;gap:8px;flex-shrink:0}
-.sp-odd-btn{padding:8px 14px;border-radius:6px;border:1px solid var(--border);
-  background:var(--bg);cursor:pointer;text-align:center;transition:all .2s;min-width:64px}
-.sp-odd-btn:hover{border-color:var(--gold);background:var(--gold-dim)}
-.sp-odd-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.sp-odd-val{font-size:15px;font-weight:700;color:var(--gold)}
-.sp-game-footer{display:flex;align-items:center;gap:10px;padding:0 20px 16px;
-  opacity:0;transition:opacity .2s;pointer-events:none}
-.sp-game:hover .sp-game-footer{opacity:1;pointer-events:all}
-.sp-ai-btn{display:flex;align-items:center;gap:8px;background:var(--green-dim);
-  border:1px solid var(--green);color:var(--green);padding:8px 16px;border-radius:7px;
-  cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;transition:all .2s}
+.sp-games{display:flex;flex-direction:column;gap:2px;background:var(--border);
+  border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.sp-game{background:var(--surface);transition:background .15s;position:relative}
+.sp-game:hover{background:var(--surface2)}
+.sp-game-header{display:grid;grid-template-columns:1fr auto auto;align-items:center;
+  gap:16px;padding:14px 20px}
+.sp-teams{min-width:0}
+.sp-matchup{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.sp-team-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-vs{font-size:11px;color:var(--muted);font-weight:400;flex-shrink:0}
+.sp-meta{display:flex;align-items:center;gap:8px}
+.sp-sport-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;
+  background:var(--border);color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.sp-time-badge{font-size:11px;color:var(--muted)}
+.sp-odds{display:flex;gap:6px;flex-shrink:0}
+.sp-odd-btn{padding:7px 12px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg);cursor:default;text-align:center;min-width:58px}
+.sp-odd-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.sp-odd-val{font-size:14px;font-weight:700;color:var(--gold);line-height:1}
+.sp-favorite .sp-odd-btn{border-color:var(--gold);background:var(--gold-dim)}
+.sp-actions{display:flex;gap:8px;flex-shrink:0;opacity:0;transition:opacity .2s;pointer-events:none}
+.sp-game:hover .sp-actions{opacity:1;pointer-events:all}
+.sp-ai-btn{display:flex;align-items:center;gap:6px;background:var(--green-dim);
+  border:1px solid var(--green);color:var(--green);padding:7px 14px;border-radius:6px;
+  cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;
+  transition:all .2s;white-space:nowrap}
 .sp-ai-btn:hover{background:var(--green);color:#0A0A0F}
-.sp-ai-btn:disabled{opacity:.5;cursor:not-allowed}
-.sp-ai-result{margin:0 20px 16px;background:var(--bg);border:1px solid var(--border);
-  border-radius:8px;padding:16px;font-size:13px;line-height:1.7;color:var(--text);display:none}
-.sp-ai-result.show{display:block}
-.sp-loading{text-align:center;padding:48px;color:var(--muted);font-size:14px}
-.sp-empty{text-align:center;padding:48px;color:var(--muted)}
-.sp-stake-btn{display:inline-flex;align-items:center;gap:6px;
+.sp-ai-btn:disabled{opacity:.4;cursor:not-allowed}
+.sp-stake-btn{display:inline-flex;align-items:center;gap:5px;
   background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);
-  padding:8px 14px;border-radius:6px;font-size:12px;font-weight:700;
-  text-decoration:none;font-family:'Inter',sans-serif;transition:all .2s}
+  padding:7px 12px;border-radius:6px;font-size:12px;font-weight:700;
+  text-decoration:none;font-family:'Inter',sans-serif;transition:all .2s;white-space:nowrap}
 .sp-stake-btn:hover{background:var(--gold);color:#0A0A0F}
-.sp-refresh{font-size:11px;color:var(--muted);text-align:right;margin-bottom:8px}
+.sp-ai-result{margin:0 20px 16px;border-radius:8px;padding:14px 16px;
+  font-size:13px;line-height:1.75;display:none;
+  background:linear-gradient(135deg,#00D08408,#C9A84C05);
+  border:1px solid var(--border2)}
+.sp-ai-result.show{display:block}
+.sp-ai-result strong{color:var(--green)}
+.sp-loading{text-align:center;padding:56px;color:var(--muted);font-size:14px}
+.sp-empty{text-align:center;padding:56px;color:var(--muted);font-size:14px}
+.sp-refresh{font-size:11px;color:var(--muted)}
+.sp-count{font-size:12px;color:var(--muted)}
 
 /* ── WAGER RACE ── */
 .wr-hero{text-align:center;padding:60px 24px 40px;position:relative;overflow:hidden}
@@ -594,17 +606,18 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
   <!-- SPORTS PREDICTIONS -->
   <section id="sports" class="section-border">
     <div class="sp-section">
-      <div class="sec-eye">IA + Cuotas en vivo</div>
-      <h2 class="sec-title">PREDICCIONES<br><span style="color:var(--green)">DEL DÍA</span></h2>
-      <p class="sec-sub">Cuotas en tiempo real de los mejores eventos del día, con análisis de inteligencia artificial. Apostá con más info en Stake Argentina.</p>
-
-      <div class="sp-tabs" id="spTabs">
-        <button class="sp-tab active" onclick="filterSport('all')">🌐 Todos</button>
+      <div class="sp-hero-bar">
+        <div>
+          <div class="sec-eye">IA + Cuotas en vivo</div>
+          <h2 class="sec-title" style="margin-bottom:4px">PREDICCIONES<br><span style="color:var(--green)">DEL DÍA</span></h2>
+          <p class="sp-count" id="spRefresh">Cargando eventos...</p>
+        </div>
+        <div class="sp-tabs" id="spTabs">
+          <button class="sp-tab active" onclick="filterSport('all')">🌐 Todos</button>
+        </div>
       </div>
-
-      <div class="sp-refresh" id="spRefresh"></div>
       <div class="sp-games" id="spGames">
-        <div class="sp-loading">⚽ Cargando partidos del día...</div>
+        <div class="sp-loading">⚽ Cargando partidos...</div>
       </div>
     </div>
   </section>
@@ -1913,41 +1926,60 @@ function renderSportsGames(sports) {
   // Sort by time
   filtered.sort((a,b) => new Date(a.commence_time) - new Date(b.commence_time));
 
-  // Refresh time
+  // Refresh info
+  const totalCount = filtered.length;
   if(sports[0]?.cached_at) {
     const age = Math.round((new Date() - new Date(sports[0].cached_at)) / 60000);
-    refresh.textContent = `Actualizado hace ${age} min`;
+    refresh.textContent = `${totalCount} eventos · actualizado hace ${age} min`;
+  } else {
+    refresh.textContent = `${totalCount} eventos disponibles`;
   }
 
-  gamesDiv.innerHTML = filtered.slice(0,20).map((game, i) => {
+  gamesDiv.innerHTML = filtered.slice(0,30).map((game, i) => {
     const odds = getBestOdds(game);
-    const oddsHtml = odds ? odds.map(o => `
-      <div class="sp-odd-btn">
-        <div class="sp-odd-label">${o.name.length > 8 ? o.name.slice(0,8)+'...' : o.name}</div>
+
+    // Find favorite (lowest price)
+    const favoriteIdx = odds ? odds.reduce((minI, o, j) => o.price < odds[minI].price ? j : minI, 0) : -1;
+
+    const oddsHtml = odds ? odds.map((o, j) => `
+      <div class="sp-odd-btn${j === favoriteIdx ? ' sp-favorite' : ''}">
+        <div class="sp-odd-label">${o.name === 'Draw' ? 'Empate' : o.name.length > 10 ? o.name.slice(0,10)+'.' : o.name}</div>
         <div class="sp-odd-val">${o.price.toFixed(2)}</div>
-      </div>`).join('') : '<span style="color:var(--muted);font-size:12px">Sin cuotas</span>';
+      </div>`).join('') : '';
 
     const awayTeam = game.away_team || '—';
     const homeTeam = game.home_team || '—';
     const oddsJson = JSON.stringify(odds||[]).replace(/"/g,'&quot;');
+    const sportName = game._sport.name;
+    const sportEmoji = game._sport.emoji;
+
+    const d = new Date(game.commence_time);
+    const timeStr = d.toLocaleDateString('es-AR', {weekday:'short', day:'numeric', month:'short'}) + 
+      ' ' + d.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
 
     return `
     <div class="sp-game" id="spgame_${i}">
       <div class="sp-game-header">
         <div class="sp-teams">
-          <div class="sp-team">${awayTeam}</div>
-          <div class="sp-team" style="color:var(--muted)">vs ${homeTeam}</div>
-          <div class="sp-time">${game._sport.emoji} ${game._sport.name} · ${formatOddsTime(game.commence_time)}</div>
+          <div class="sp-matchup">
+            <span class="sp-team-name">${awayTeam}</span>
+            <span class="sp-vs">vs</span>
+            <span class="sp-team-name">${homeTeam}</span>
+          </div>
+          <div class="sp-meta">
+            <span class="sp-sport-badge">${sportEmoji} ${sportName}</span>
+            <span class="sp-time-badge">🕐 ${timeStr}</span>
+          </div>
         </div>
         <div class="sp-odds">${oddsHtml}</div>
-      </div>
-      <div class="sp-game-footer">
-        <button class="sp-ai-btn" id="spaiBtn_${i}" onclick="getAIPrediction(${i}, '${awayTeam.replace(/'/g,"\\'")}', '${homeTeam.replace(/'/g,"\\'")}', '${game._sport.name}', '${oddsJson}')">
-          ✨ Análisis IA
-        </button>
-        <a href="https://pba.stake.bet.ar/?c=STAKELP&offer=stakelp" target="_blank" class="sp-stake-btn">
-          🎰 Apostar en Stake
-        </a>
+        <div class="sp-actions">
+          <button class="sp-ai-btn" id="spaiBtn_${i}" onclick="getAIPrediction(${i}, '${awayTeam.replace(/'/g,"\\'")}', '${homeTeam.replace(/'/g,"\\'")}', '${sportName}', '${oddsJson}')">
+            ✨ IA
+          </button>
+          <a href="https://pba.stake.bet.ar/?c=STAKELP&offer=stakelp" target="_blank" class="sp-stake-btn">
+            🎰 Apostar
+          </a>
+        </div>
       </div>
       <div class="sp-ai-result" id="spai_${i}"></div>
     </div>`;
@@ -1978,7 +2010,10 @@ async function getAIPrediction(i, away, home, sport, oddsJson) {
     });
     const data = await res.json();
     if(data.ok) {
-      result.innerHTML = data.analysis.replace(/\n/g, '<br>');
+      const formatted = data.analysis
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+      result.innerHTML = formatted;
     } else {
       result.innerHTML = '<span style="color:var(--red)">Error: ' + (data.error || 'Sin respuesta') + '</span>';
     }
