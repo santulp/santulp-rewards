@@ -111,22 +111,25 @@ h1 em{font-style:normal;color:var(--green)}
 @media(max-width:768px){.ruleta-grid{grid-template-columns:1fr}nav{padding:14px 18px}}
 
 .wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:24px}
-.wheel-container{position:relative;width:270px;height:270px}
-.wheel-glow{position:absolute;inset:-24px;border-radius:50%;
-  background:radial-gradient(circle,#00D08422 0%,transparent 70%);animation:glow-pulse 3s ease-in-out infinite}
-canvas#wheelCanvas{width:270px;height:270px;border-radius:50%;position:relative;z-index:2}
-.wheel-pointer{position:absolute;top:-13px;left:50%;transform:translateX(-50%);z-index:10;
-  width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
-  border-top:20px solid var(--gold);filter:drop-shadow(0 0 5px var(--gold))}
+.wheel-container{position:relative;width:380px;height:380px}
+.wheel-glow{position:absolute;inset:-30px;border-radius:50%;
+  background:radial-gradient(circle,#C9A84C30 0%,#00D08415 40%,transparent 70%);
+  animation:glow-pulse 2s ease-in-out infinite}
+canvas#wheelCanvas{width:380px;height:380px;border-radius:50%;position:relative;z-index:2;
+  filter:drop-shadow(0 0 20px rgba(201,168,76,0.3))}
+.wheel-pointer{position:absolute;top:-18px;left:50%;transform:translateX(-50%);z-index:10;
+  width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;
+  border-top:30px solid var(--gold);filter:drop-shadow(0 0 8px var(--gold))}
 .wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:42px;height:42px;background:var(--bg);border:3px solid var(--border2);
-  border-radius:50%;z-index:10;display:flex;align-items:center;justify-content:center;font-size:16px}
+  width:56px;height:56px;background:var(--bg);border:4px solid var(--gold);
+  border-radius:50%;z-index:10;display:flex;align-items:center;justify-content:center;
+  font-size:22px;box-shadow:0 0 16px #C9A84C66}
 
-#spinBtn{background:var(--gold);color:#0A0A0F;border:none;cursor:pointer;
-  padding:15px 48px;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;
-  border-radius:6px;transition:all .2s}
-#spinBtn:hover:not(:disabled){background:#e0bb60;box-shadow:0 0 28px #C9A84C66;transform:translateY(-2px)}
-#spinBtn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+#spinBtn{background:linear-gradient(135deg,var(--gold),#e0bb60);color:#0A0A0F;border:none;cursor:pointer;
+  padding:18px 56px;font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;
+  border-radius:8px;transition:all .2s;box-shadow:0 4px 20px #C9A84C44}
+#spinBtn:hover:not(:disabled){background:linear-gradient(135deg,#e0bb60,#f0cc70);box-shadow:0 6px 32px #C9A84C66;transform:translateY(-3px)}
+#spinBtn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
 .spin-hint{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
 .spin-hint strong{color:var(--text)}
 
@@ -399,7 +402,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
         <div class="wheel-container">
           <div class="wheel-glow"></div>
           <div class="wheel-pointer"></div>
-          <canvas id="wheelCanvas" width="540" height="540"></canvas>
+          <canvas id="wheelCanvas" width="760" height="760"></canvas>
           <div class="wheel-center">🎰</div>
         </div>
         <button id="spinBtn" disabled>GIRAR</button>
@@ -1167,19 +1170,20 @@ const RANK_PRIZES = {
   Legend:   { p1: 5000,  p2: 25000, p3: 50000,  jackpot: 500000  },
 };
 
-// Probabilidades: 25pts=60%, 50pts=25%, $1k=8%, $5k=4%, $10k=2%, $100k=0.1%, nada=0.9%
-// Usamos weight de 1000 partes totales
+// Total weights = 10000 para mayor precisión
+// 25pts=60%, 50pts=25%, $p1=8%, $p2=4%, $p3=2%, $jackpot=0.1%, 5pts(mala suerte)=0.9%
 function buildSegmentsForRank(rankName) {
   const p = RANK_PRIZES[rankName] || RANK_PRIZES.Beginner;
   const fmt = (n) => '$' + n.toLocaleString('es-AR');
+  // prob = probabilidad interna (de 10000). Visual siempre igual (7 segmentos iguales)
   return [
-    { label:'25 PTS',   color:'#1A1A2E', weight:600, pts:25,  cash:0,      prize:'25 Puntos ⭐',             desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
-    { label:'50 PTS',   color:'#2A2A3E', weight:250, pts:50,  cash:0,      prize:'50 Puntos ⭐',             desc:'¡Bien! Seguí acumulando.', emoji:'⭐' },
-    { label:fmt(p.p1),  color:'#1E4A2A', weight:80,  pts:0,   cash:p.p1,   prize:fmt(p.p1)+' ARS 💸',       desc:'¡Felicitaciones! Hablá con SantuLP en el stream para reclamar.', emoji:'💸' },
-    { label:fmt(p.p2),  color:'#00A86B', weight:40,  pts:0,   cash:p.p2,   prize:fmt(p.p2)+' ARS 🎉',       desc:'¡Muy bien! Hablá con SantuLP en el stream para reclamar.', emoji:'🎉' },
-    { label:fmt(p.p3),  color:'#00D084', weight:20,  pts:0,   cash:p.p3,   prize:fmt(p.p3)+' ARS 🔥',       desc:'¡Excelente! Hablá con SantuLP en el stream para reclamar.', emoji:'🔥' },
-    { label:'NADA',     color:'#111118', weight:9,   pts:0,   cash:0,      prize:'Sin premio 😔',            desc:'Esta vez no fue. ¡Mañana volvés a intentarlo!', emoji:'😔' },
-    { label:'JACKPOT',  color:'#C9A84C', weight:1,   pts:0,   cash:p.jackpot, prize:'JACKPOT '+fmt(p.jackpot)+' 🏆', desc:'¡¡JACKPOT!! Hablá con SantuLP en el stream para reclamar tu premio.', emoji:'🏆' },
+    { label:'25 PTS',  color:'#1A1A2E', prob:6000, pts:25, cash:0,         prize:'25 Puntos ⭐',                   desc:'Puntos sumados. ¡Seguí mirando!', emoji:'⭐' },
+    { label:'50 PTS',  color:'#2A2A3E', prob:2500, pts:50, cash:0,         prize:'50 Puntos ⭐',                   desc:'¡Bien! Seguí acumulando.', emoji:'⭐' },
+    { label:fmt(p.p1), color:'#1E4A2A', prob:800,  pts:0,  cash:p.p1,      prize:fmt(p.p1)+' ARS 💸',             desc:'¡Felicitaciones! Hablá con SantuLP en el stream para reclamar.', emoji:'💸' },
+    { label:fmt(p.p2), color:'#00A86B', prob:400,  pts:0,  cash:p.p2,      prize:fmt(p.p2)+' ARS 🎉',             desc:'¡Muy bien! Hablá con SantuLP en el stream para reclamar.', emoji:'🎉' },
+    { label:fmt(p.p3), color:'#00D084', prob:200,  pts:0,  cash:p.p3,      prize:fmt(p.p3)+' ARS 🔥',             desc:'¡Excelente! Hablá con SantuLP en el stream para reclamar.', emoji:'🔥' },
+    { label:'5 PTS',   color:'#111118', prob:90,   pts:5,  cash:0,         prize:'5 Puntos 🍀',                   desc:'¡Mala suerte! Algo es algo. ¡Mañana volvés!', emoji:'🍀' },
+    { label:'JACKPOT', color:'#C9A84C', prob:10,   pts:0,  cash:p.jackpot, prize:'JACKPOT '+fmt(p.jackpot)+' 🏆', desc:'¡¡JACKPOT!! Hablá con SantuLP en el stream para reclamar.', emoji:'🏆' },
   ];
 }
 
@@ -1227,7 +1231,7 @@ let pool = [];
 
 function buildPool(segs) {
   pool = [];
-  segs.forEach((s,i)=>{ for(let j=0;j<s.weight;j++) pool.push(i); });
+  segs.forEach((s,i)=>{ for(let j=0;j<s.prob;j++) pool.push(i); });
 }
 buildPool(segments);
 
@@ -1263,21 +1267,154 @@ function incrementSpinsToday() {
 function drawWheel(angle) {
   ctx.clearRect(0,0,W,H);
   const arc = (Math.PI*2)/segments.length;
+
+  // Draw segments
   segments.forEach((seg,i)=>{
     const start=angle+i*arc, end=start+arc;
+
+    // Segment fill
     ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,start,end); ctx.closePath();
     ctx.fillStyle=seg.color; ctx.fill();
-    ctx.strokeStyle='#0A0A0F'; ctx.lineWidth=4; ctx.stroke();
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(start+arc/2);
-    ctx.textAlign='right'; ctx.fillStyle='#ffffff';
-    ctx.font='bold 13px Inter,sans-serif';
-    ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=5;
-    ctx.fillText(seg.label, R-12, 5); ctx.restore();
+
+    // Segment border
+    ctx.strokeStyle='rgba(201,168,76,0.6)'; ctx.lineWidth=3; ctx.stroke();
+
+    // Text
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(start+arc/2);
+
+    // Background pill for text
+    const textX = R - 24;
+    ctx.textAlign='right';
+    ctx.font='bold 18px Inter,sans-serif';
+    ctx.shadowColor='rgba(0,0,0,0.8)'; ctx.shadowBlur=6;
+    ctx.fillStyle='#ffffff';
+    ctx.fillText(seg.label, textX, 6);
+    ctx.restore();
   });
+
+  // Outer decorative rings
   ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
-  ctx.strokeStyle='#1E1E2E'; ctx.lineWidth=8; ctx.stroke();
+  ctx.strokeStyle='#C9A84C'; ctx.lineWidth=6; ctx.stroke();
+
+  ctx.beginPath(); ctx.arc(cx,cy,R+8,0,Math.PI*2);
+  ctx.strokeStyle='rgba(201,168,76,0.3)'; ctx.lineWidth=3; ctx.stroke();
+
+  // Inner ring
+  ctx.beginPath(); ctx.arc(cx,cy,R*0.15,0,Math.PI*2);
+  ctx.fillStyle='#0A0A0F'; ctx.fill();
+  ctx.strokeStyle='#C9A84C'; ctx.lineWidth=4; ctx.stroke();
+
+  // Dots on outer ring at segment boundaries
+  segments.forEach((_,i) => {
+    const angle2 = angle + i * arc;
+    const dotX = cx + (R+2) * Math.cos(angle2);
+    const dotY = cy + (R+2) * Math.sin(angle2);
+    ctx.beginPath(); ctx.arc(dotX, dotY, 5, 0, Math.PI*2);
+    ctx.fillStyle='#C9A84C'; ctx.fill();
+  });
 }
 drawWheel(currentAngle);
+
+// ══════════════════════════════════════════════
+//  SOUND & ANIMATIONS
+// ══════════════════════════════════════════════
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function getAudioCtx() {
+  if(!audioCtx) audioCtx = new AudioCtx();
+  return audioCtx;
+}
+
+function playSpinSound(spinning) {
+  try {
+    const ctx2 = getAudioCtx();
+    if(spinning) {
+      // Ratchet clicking sound during spin
+      const osc = ctx2.createOscillator();
+      const gain = ctx2.createGain();
+      osc.connect(gain); gain.connect(ctx2.destination);
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(200, ctx2.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, ctx2.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.15, ctx2.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + 0.1);
+      osc.start(); osc.stop(ctx2.currentTime + 0.1);
+    }
+  } catch(e){}
+}
+
+function playWinSound(isCash, isJackpot) {
+  try {
+    const ctx2 = getAudioCtx();
+    if(isJackpot) {
+      // Jackpot fanfare
+      [523, 659, 784, 1047].forEach((freq, i) => {
+        const osc = ctx2.createOscillator();
+        const gain = ctx2.createGain();
+        osc.connect(gain); gain.connect(ctx2.destination);
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.3, ctx2.currentTime + i*0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + i*0.15 + 0.4);
+        osc.start(ctx2.currentTime + i*0.15);
+        osc.stop(ctx2.currentTime + i*0.15 + 0.4);
+      });
+    } else if(isCash) {
+      // Win sound
+      [523, 659, 784].forEach((freq, i) => {
+        const osc = ctx2.createOscillator();
+        const gain = ctx2.createGain();
+        osc.connect(gain); gain.connect(ctx2.destination);
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.2, ctx2.currentTime + i*0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + i*0.1 + 0.3);
+        osc.start(ctx2.currentTime + i*0.1);
+        osc.stop(ctx2.currentTime + i*0.1 + 0.3);
+      });
+    } else {
+      // Small points sound
+      const osc = ctx2.createOscillator();
+      const gain = ctx2.createGain();
+      osc.connect(gain); gain.connect(ctx2.destination);
+      osc.type = 'sine';
+      osc.frequency.value = 440;
+      gain.gain.setValueAtTime(0.1, ctx2.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + 0.2);
+      osc.start(); osc.stop(ctx2.currentTime + 0.2);
+    }
+  } catch(e){}
+}
+
+function spawnMoneyEmoji(count=12) {
+  const emojis = ['💰','💵','💸','🤑','✨'];
+  for(let i=0; i<count; i++) {
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.cssText = `
+        position:fixed;z-index:9998;font-size:${24+Math.random()*20}px;
+        left:${20+Math.random()*60}vw;top:${20+Math.random()*40}vh;
+        pointer-events:none;user-select:none;
+        animation:moneyFall 1.5s ease-out forwards;
+      `;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(), 1500);
+    }, i*80);
+  }
+}
+
+// Add money fall keyframe to document
+const styleEl = document.createElement('style');
+styleEl.textContent = `
+@keyframes moneyFall {
+  0%   { transform: translateY(0) rotate(0deg) scale(0.5); opacity:1; }
+  100% { transform: translateY(200px) rotate(${Math.random()>0.5?'':'- '}360deg) scale(1.2); opacity:0; }
+}`;
+document.head.appendChild(styleEl);
 
 // ══════════════════════════════════════════════
 //  DAILY CODE — auto-generated from date seed
@@ -1342,10 +1479,14 @@ document.getElementById('spinBtn').addEventListener('click', async ()=>{
   const startAngle = currentAngle;
 
   function ease(t){ return 1-Math.pow(1-t,4); }
+  let lastClickDeg = -1;
   function animate(now){
     const p=Math.min((now-start)/duration,1);
     currentAngle=startAngle+totalRot*ease(p);
     drawWheel(currentAngle);
+    // Ratchet click sound
+    const deg = Math.floor(((currentAngle % (Math.PI*2)) / (Math.PI*2)) * segments.length * 4);
+    if(deg !== lastClickDeg) { lastClickDeg = deg; playSpinSound(true); }
     if(p<1){ requestAnimationFrame(animate); }
     else {
       spinning=false;
@@ -1374,9 +1515,15 @@ async function onSpinComplete(seg) {
   loadRanking();
 
   const isCash    = seg.cash > 0;
+  const isJackpot = seg.cash >= 50000;
   const isNothing = !seg.pts && !seg.cash;
+
+  // Sound & animation
+  playWinSound(isCash, isJackpot);
+  if(isCash) spawnMoneyEmoji(isJackpot ? 30 : 15);
+
   document.getElementById('modalEmoji').textContent = seg.emoji;
-  document.getElementById('modalTitle').textContent = isCash ? (seg.cash >= 50000 ? '¡¡JACKPOT!!' : '¡GANASTE!') : isNothing ? 'SIN PREMIO' : '¡SUMASTE!';
+  document.getElementById('modalTitle').textContent = isJackpot ? '¡¡JACKPOT!!' : isCash ? '¡GANASTE!' : isNothing ? 'MALA SUERTE' : '¡SUMASTE!';
   document.getElementById('modalPrize').textContent = seg.prize;
   document.getElementById('modalDesc').textContent  = seg.desc;
   document.getElementById('modalOverlay').classList.add('show');
