@@ -603,6 +603,28 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     <a href="https://pba.stake.bet.ar/?c=STAKELP&offer=stakelp" class="btn-primary" target="_blank">Ir a Stake Argentina →</a>
   </section>
 
+  <!-- TELEGRAM -->
+  <section class="section section-border" style="text-align:center">
+    <div class="sec-eye">Comunidad</div>
+    <h2 class="sec-title">UNITE AL<br><span style="color:#29A8E0">TELEGRAM</span></h2>
+    <p style="color:var(--muted);font-size:15px;max-width:440px;margin:0 auto 36px;line-height:1.65">
+      Recibí el código del día, novedades del stream, resultados del Wager Race y predicciones deportivas directo en tu Telegram.<br><br>
+      <span style="color:var(--green);font-weight:600">🎁 Uníte y avisanos en el canal — te regalamos 10 puntos en tu cuenta.</span>
+    </p>
+    <a href="https://t.me/+2r8Bt3WIWDZmYmEx" target="_blank" style="
+      display:inline-flex;align-items:center;gap:12px;
+      background:#29A8E0;color:#fff;border:none;cursor:pointer;
+      padding:16px 36px;font-family:'Inter',sans-serif;font-weight:700;font-size:15px;
+      border-radius:8px;text-decoration:none;transition:all .2s;
+      box-shadow:0 4px 20px #29A8E044">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.026 9.544c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L6.9 14.41l-2.948-.924c-.64-.203-.654-.64.136-.948l11.51-4.437c.535-.194 1.003.13.964.947z"/></svg>
+      Unirse al canal
+    </a>
+    <div style="margin-top:20px;font-size:12px;color:var(--muted)">
+      Ya somos parte de la comunidad SantuLP 🎰
+    </div>
+  </section>
+
   <!-- SPORTS PREDICTIONS -->
   <section id="sports" class="section-border">
     <div class="sp-section">
@@ -696,7 +718,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     <div class="footer-logo">SANTU<span>LP</span> REWARDS</div>
     <div class="footer-links">
       <a href="https://kick.com/santulp" target="_blank">Kick</a>
-      <a href="#" target="_blank">Instagram</a>
+      <a href="https://t.me/+2r8Bt3WIWDZmYmEx" target="_blank">Telegram</a>
       <a href="https://pba.stake.bet.ar" target="_blank">Stake AR</a>
       <a href="#" onclick="showAdmin()">⚙</a>
     </div>
@@ -824,6 +846,14 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
               🧪 Modo prueba — podés editar puntos manualmente
             </span>
           </div>
+          <!-- Buscador rápido -->
+          <div style="display:flex;gap:10px;margin-bottom:14px">
+            <input id="adminSearchInput" placeholder="🔍 Buscar usuario..." 
+              style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);
+              padding:10px 14px;border-radius:7px;font-family:'Inter',sans-serif;font-size:14px;outline:none"
+              oninput="adminSearchUser(this.value)"/>
+          </div>
+          <div id="adminSearchResult" style="margin-bottom:10px"></div>
           <div class="admin-users-list" id="adminUsersList">
             <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">Cargando...</div>
           </div>
@@ -1764,6 +1794,45 @@ async function loadAdminData() {
       </div>
     </div>`;
   }).join('');
+}
+
+async function adminSearchUser(query) {
+  const result = document.getElementById('adminSearchResult');
+  if(!query || query.length < 2) { result.innerHTML = ''; return; }
+
+  const u = await stGet('user:' + query.toLowerCase().trim());
+  if(!u) {
+    result.innerHTML = `<div style="font-size:13px;color:var(--muted);padding:8px 0">No se encontró "${query}"</div>`;
+    return;
+  }
+
+  const rank = getViewerRank(u.pts||0);
+  result.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;
+      background:var(--bg);border:1px solid var(--green);border-radius:8px">
+      <div style="font-size:20px">${rank.emoji}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:14px">${u.username}</div>
+        <div style="font-size:12px;color:${rank.color}">${rank.name} · ${u.pts||0} pts</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick="adminAddPts('${u.username}', 10)" 
+          style="background:var(--green-dim);border:1px solid var(--green);color:var(--green);
+          padding:6px 12px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">
+          +10 Telegram
+        </button>
+        <button onclick="adminAddPts('${u.username}', 100)"
+          style="background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);
+          padding:6px 12px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">
+          +100
+        </button>
+        <button onclick="adminSetPts('${u.username}')"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);
+          padding:6px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">
+          ✏️
+        </button>
+      </div>
+    </div>`;
 }
 
 function copyAdminCode() {
