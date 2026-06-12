@@ -310,6 +310,22 @@ canvas#wheelCanvas{width:380px;height:380px;border-radius:50%;position:relative;
 .sp-refresh{font-size:11px;color:var(--muted)}
 .sp-count{font-size:12px;color:var(--muted)}
 
+/* ── LIVE SCORES ── */
+.sp-live-badge{display:inline-flex;align-items:center;gap:5px;
+  background:#FF475718;border:1px solid var(--red);color:var(--red);
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;
+  text-transform:uppercase;letter-spacing:.5px}
+.sp-live-dot{width:6px;height:6px;border-radius:50%;background:var(--red);
+  box-shadow:0 0 5px var(--red);animation:pulse 1.5s infinite}
+.sp-score-display{display:flex;align-items:center;gap:10px;
+  font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text);
+  letter-spacing:1px;flex-shrink:0;padding:0 8px}
+.sp-score-num{min-width:22px;text-align:center}
+.sp-score-sep{color:var(--muted);font-size:14px}
+.sp-ft-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;
+  background:var(--border);color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.sp-game.is-live{border-left:2px solid var(--red)}
+
 /* ── WAGER RACE ── */
 .wr-hero{text-align:center;padding:60px 24px 40px;position:relative;overflow:hidden}
 .wr-hero::before{content:'';position:absolute;inset:0;
@@ -1219,7 +1235,8 @@ function loginAs(data) {
       loadWagerRace();
       updateWrTimer();
       setInterval(updateWrTimer, 1000);
-      loadSportsData(); // actualiza estado en vivo cada 2 min
+      loadSportsData();
+      startLiveScoresPolling();
     }, 250);
   }, 1000);
 }
@@ -1969,6 +1986,54 @@ function getBestOdds(game) {
   return h2h.outcomes;
 }
 
+// ══════════════════════════════════════════════
+//  LIVE SCORES (polling cada 25s)
+// ══════════════════════════════════════════════
+let liveScoresMap = {};
+let liveScoresTimer = null;
+
+async function loadLiveScores() {
+  try {
+    const res = await fetch('/api/get-scores');
+    const data = await res.json();
+    if(data.ok) {
+      liveScoresMap = data.events || {};
+      if(allSportsData.length) renderSportsGames(allSportsData);
+    }
+  } catch(e) {
+    console.log('Live scores fetch failed:', e);
+  }
+}
+
+function startLiveScoresPolling() {
+  if(liveScoresTimer) clearInterval(liveScoresTimer);
+  loadLiveScores();
+  liveScoresTimer = setInterval(loadLiveScores, 25000);
+}
+
+// Busca el score de un evento por nombres de equipo + commence_time (fallback si no hay id directo)
+function getScoreInfo(game) {
+  // 1. Intentar por id directo (The Odds API usa el mismo id en /odds y /scores)
+  let ev = liveScoresMap[game.id];
+
+  // 2. Fallback: buscar por home/away team si no matchea por id
+  if(!ev) {
+    ev = Object.values(liveScoresMap).find(e =>
+      e.home_team === game.home_team && e.away_team === game.away_team
+    );
+  }
+  if(!ev || !ev.scores || !ev.scores.length) return null;
+
+  const awayScore = ev.scores.find(s => s.name === ev.away_team)?.score ?? '-';
+  const homeScore = ev.scores.find(s => s.name === ev.home_team)?.score ?? '-';
+
+  return {
+    awayScore, homeScore,
+    completed: !!ev.completed,
+    isLive: !ev.completed
+  };
+}
+
 function renderSportsGames(sports) {
   const tabs = document.getElementById('spTabs');
   const gamesDiv = document.getElementById('spGames');
@@ -1992,8 +2057,15 @@ function renderSportsGames(sports) {
     return;
   }
 
-  // Sort by time
-  filtered.sort((a,b) => new Date(a.commence_time) - new Date(b.commence_time));
+  // Sort: en vivo primero, después por hora
+  filtered.sort((a,b) => {
+    const scoreA = getScoreInfo(a);
+    const scoreB = getScoreInfo(b);
+    const liveA = scoreA?.isLive ? 1 : 0;
+    const liveB = scoreB?.isLive ? 1 : 0;
+    if(liveA !== liveB) return liveB - liveA; // en vivo primero
+    return new Date(a.commence_time) - new Date(b.commence_time);
+  });
 
   // Refresh info
   const totalCount = filtered.length;
@@ -2006,6 +2078,7 @@ function renderSportsGames(sports) {
 
   gamesDiv.innerHTML = filtered.slice(0,30).map((game, i) => {
     const odds = getBestOdds(game);
+    const scoreInfo = getScoreInfo(game);
 
     // Find favorite (lowest price)
     const favoriteIdx = odds ? odds.reduce((minI, o, j) => o.price < odds[minI].price ? j : minI, 0) : -1;
@@ -2026,8 +2099,22 @@ function renderSportsGames(sports) {
     const timeStr = d.toLocaleDateString('es-AR', {weekday:'short', day:'numeric', month:'short'}) + 
       ' ' + d.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
 
+    // Badge y marcador según estado
+    let statusBadge = `<span class="sp-time-badge">🕐 ${timeStr}</span>`;
+    let scoreHtml = '';
+    let liveClass = '';
+    if(scoreInfo) {
+      if(scoreInfo.isLive) {
+        statusBadge = '<span class="sp-live-badge"><span class="sp-live-dot"></span>En vivo</span>';
+        liveClass = ' is-live';
+      } else if(scoreInfo.completed) {
+        statusBadge = '<span class="sp-ft-badge">Finalizado</span>';
+      }
+      scoreHtml = `<div class="sp-score-display"><span class="sp-score-num">${scoreInfo.awayScore}</span><span class="sp-score-sep">-</span><span class="sp-score-num">${scoreInfo.homeScore}</span></div>`;
+    }
+
     return `
-    <div class="sp-game" id="spgame_${i}">
+    <div class="sp-game${liveClass}" id="spgame_${i}">
       <div class="sp-game-header">
         <div class="sp-teams">
           <div class="sp-matchup">
@@ -2037,9 +2124,10 @@ function renderSportsGames(sports) {
           </div>
           <div class="sp-meta">
             <span class="sp-sport-badge">${sportEmoji} ${sportName}</span>
-            <span class="sp-time-badge">🕐 ${timeStr}</span>
+            ${statusBadge}
           </div>
         </div>
+        ${scoreHtml}
         <div class="sp-odds">${oddsHtml}</div>
         <div class="sp-actions">
           <button class="sp-ai-btn" id="spaiBtn_${i}" onclick="getAIPrediction(${i}, '${awayTeam.replace(/'/g,"\\'")}', '${homeTeam.replace(/'/g,"\\'")}', '${sportName}', '${oddsJson}')">
@@ -2264,6 +2352,7 @@ async function loadWrAdminData() {
     document.getElementById('wrPrize4to10').value = c.prize4to10 || 7500;
     document.getElementById('wrPct').value        = c.pct        || 2;
     document.getElementById('wrCap').value        = c.cap        || 500000;
+    document.getElementById('wrPts1150').value    = c.pts1150    || 10;
     (data.players || []).forEach(p => addWrPlayer(p.username, p.wager));
   } else {
     // Add 3 empty slots by default
@@ -2320,7 +2409,6 @@ document.getElementById('copyCodeBtn').addEventListener('click', ()=>{
   });
 });
 
-document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 function toggleAdminPass() {
   const input = document.getElementById('adminPassInput');
   const eye   = document.getElementById('adminPassEye');
