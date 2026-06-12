@@ -2,16 +2,9 @@ const ODDS_API_KEY = '388762c002c6ee37e4b21f01a3f02712';
 const SUPA_URL = 'https://ayhoefdgcrgyryrufazr.supabase.co';
 const SUPA_KEY = 'sb_publishable_3JGuVqHh0bhEDX3FUMq3vQ_-F5dtw9E';
 
-// Mismos deportes que fetch-odds.js
+// Solo Mundial 2026 para marcadores en vivo (limita el consumo de cuota)
 const SPORTS = [
-  { key: 'soccer_fifa_world_cup',             name: 'Mundial 2026', emoji: '🌍' },
-  { key: 'soccer_argentina_primera_division', name: 'Liga Argentina', emoji: '🇦🇷' },
-  { key: 'soccer_brazil_campeonato',          name: 'Brasil Serie A', emoji: '🇧🇷' },
-  { key: 'basketball_nba',                    name: 'NBA', emoji: '🏀' },
-  { key: 'mma_mixed_martial_arts',            name: 'UFC / MMA', emoji: '🥊' },
-  { key: 'boxing_boxing',                     name: 'Boxeo', emoji: '🥊' },
-  { key: 'tennis_atp',                        name: 'Tennis ATP', emoji: '🎾' },
-  { key: 'tennis_wta',                        name: 'Tennis WTA', emoji: '🎾' },
+  { key: 'soccer_fifa_world_cup', name: 'Mundial 2026', emoji: '🌍' },
 ];
 
 async function fetchScoresForSport(sportKey) {
