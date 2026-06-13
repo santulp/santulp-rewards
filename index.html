@@ -456,7 +456,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
       <a onclick="scrollToSection('ruleta')" class="btn-primary" style="cursor:pointer">Tirar la ruleta</a>
       <a onclick="scrollToSection('ranking')" class="btn-outline" style="cursor:pointer">Ver ranking</a>
       <a onclick="scrollToSection('sports')" class="btn-outline" style="cursor:pointer;border-color:var(--green);color:var(--green)">⚽ Predicciones</a>
-      <a onclick="scrollToSection('wagerrace')" class="btn-outline" style="cursor:pointer;border-color:var(--gold);color:var(--gold)">🏁 Wager Race</a>
+      <a onclick="scrollToSection('sorteo')" class="btn-outline" style="cursor:pointer;border-color:var(--gold);color:var(--gold)">🎁 Sorteo Semanal</a>
     </div>
     <div class="stats-bar">
       <div class="stat"><div class="stat-num" id="statUsers">—</div><div class="stat-label">Jugadores</div></div>
@@ -516,7 +516,56 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     </div>
   </section>
 
-  <!-- RANKING -->
+  <!-- RULETA APOSTADOR -->
+  <section id="ruletaApostador" class="section section-border" style="display:none">
+    <div class="ruleta-grid">
+      <div class="wheel-wrap">
+        <div class="wheel-container">
+          <div class="wheel-glow" style="background:radial-gradient(circle,#C9A84C40 0%,#FF475715 40%,transparent 70%)"></div>
+          <div class="wheel-pointer"></div>
+          <canvas id="wheelCanvasApostador" width="760" height="760"></canvas>
+          <div class="wheel-center">🐉</div>
+        </div>
+        <button id="spinBtnApostador" disabled>GIRAR</button>
+        <div id="apostadorRankLabel" style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--muted)">🔰 Ruleta Apostador</div>
+        <div id="pendingSpinsLabel" style="font-size:12px;color:var(--gold);font-weight:600">0 giros disponibles</div>
+        <p class="spin-hint">Ganás giros participando y ganando en el Sorteo Semanal de Depósitos.<br><strong>Máximo 1 giro apostador por día.</strong></p>
+      </div>
+
+      <div>
+        <div class="sec-eye">Ruleta apostador</div>
+        <h2 class="sec-title">PREMIOS<br><span style="color:var(--gold)">GRANDES</span></h2>
+        <p class="sec-sub">Esta ruleta tiene premios mucho más grandes, incluyendo un Jackpot real de hasta $500.000 ARS según tu rango jugador.</p>
+        <div class="prizes-list">
+          <div class="prize-row">
+            <div class="prize-dot" style="background:#C9A84C;box-shadow:0 0 5px #C9A84C"></div>
+            <span class="prize-name">JACKPOT 🏆</span>
+            <span class="prize-chance">0.1%</span>
+          </div>
+          <div class="prize-row">
+            <div class="prize-dot" style="background:#00D084;box-shadow:0 0 5px #00D084"></div>
+            <span class="prize-name">Premio Grande 🔥</span>
+            <span class="prize-chance">2%</span>
+          </div>
+          <div class="prize-row">
+            <div class="prize-dot" style="background:#00A86B"></div>
+            <span class="prize-name">Premio Medio 🎉</span>
+            <span class="prize-chance">4%</span>
+          </div>
+          <div class="prize-row">
+            <div class="prize-dot" style="background:#1E4A2A"></div>
+            <span class="prize-name">Premio Chico 💸</span>
+            <span class="prize-chance">8%</span>
+          </div>
+          <div class="prize-row">
+            <div class="prize-dot" style="background:#2A2A3E"></div>
+            <span class="prize-name">Puntos bonus ⭐</span>
+            <span class="prize-chance">85.9%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <section id="ranking" class="section section-border">
     <div class="ranking-grid">
       <div>
@@ -548,6 +597,10 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
               <div class="user-stat-box">
                 <div class="user-stat-val" id="myCardRankBadge" style="font-size:20px">🎮</div>
                 <div class="user-stat-lbl">Rango viewer</div>
+              </div>
+              <div class="user-stat-box">
+                <div class="user-stat-val" id="myCardPlayerRankBadge" style="font-size:20px">🔰</div>
+                <div class="user-stat-lbl">Rango jugador</div>
               </div>
               <div class="user-stat-box">
                 <div class="user-stat-val" id="myCardWins">0</div>
@@ -624,7 +677,7 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     <div class="sec-eye">Comunidad</div>
     <h2 class="sec-title">UNITE AL<br><span style="color:#29A8E0">TELEGRAM</span></h2>
     <p style="color:var(--muted);font-size:15px;max-width:440px;margin:0 auto 36px;line-height:1.65">
-      Recibí el código del día, novedades del stream, resultados del Wager Race y predicciones deportivas directo en tu Telegram.<br><br>
+      Recibí el código del día, novedades del stream, ganadores del Sorteo Semanal y predicciones deportivas directo en tu Telegram.<br><br>
       <span style="color:var(--green);font-weight:600">🎁 Uníte y avisanos en el canal — te regalamos 10 puntos en tu cuenta.</span>
     </p>
     <a href="https://t.me/+2r8Bt3WIWDZmYmEx" target="_blank" style="
@@ -660,11 +713,11 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
     </div>
   </section>
 
-  <!-- WAGER RACE -->
-  <section id="wagerrace" class="section-border">
+  <!-- SORTEO SEMANAL DE DEPÓSITOS -->
+  <section id="sorteo" class="section-border">
     <div class="wr-hero">
-      <div class="wr-title">WAGER<br><span>RACE</span> 🏁</div>
-      <div class="wr-subtitle">Competencia semanal · Stake Argentina</div>
+      <div class="wr-title">SORTEO<br><span>SEMANAL</span> 🎁</div>
+      <div class="wr-subtitle">Depósitos de la semana · Stake Argentina</div>
 
       <div class="wr-timer">
         <div class="wr-timer-box"><div class="wr-timer-num" id="wrDays">0</div><div class="wr-timer-lbl">Días</div></div>
@@ -675,57 +728,55 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
 
       <div class="wr-prizepool">
         <div class="wr-pool-box">
-          <div class="wr-pool-num" id="wrTotalPool">$0</div>
-          <div class="wr-pool-lbl">Premio total estimado</div>
+          <div class="wr-pool-num" id="sorteoPool">$50.000</div>
+          <div class="wr-pool-lbl">Premio total en juego</div>
         </div>
         <div style="width:1px;height:48px;background:var(--border)"></div>
         <div class="wr-pool-box">
-          <div class="wr-pool-num" id="wrTotalPlayers">0</div>
-          <div class="wr-pool-lbl">Jugadores esta semana</div>
+          <div class="wr-pool-num" id="sorteoParticipants">0</div>
+          <div class="wr-pool-lbl">Participantes esta semana</div>
         </div>
       </div>
     </div>
 
-    <!-- Top 3 -->
+    <!-- Cajas de premios -->
     <div style="max-width:760px;margin:0 auto;padding:0 24px 40px">
-      <div class="wr-top3" id="wrTop3">
+      <div class="wr-top3" id="sorteoBoxes">
         <div class="wr-card silver">
           <div class="wr-card-pos">🥈</div>
-          <div class="wr-card-name" id="wr2name">—</div>
-          <div class="wr-card-wager" id="wr2wager">$0 apostado</div>
-          <div class="wr-card-prize-lbl">Premio</div>
-          <div class="wr-card-prize" id="wr2prize">$0</div>
-          <div class="wr-card-pct" id="wr2pct">+2% del wagger</div>
+          <div class="wr-card-prize-lbl">Caja Plata</div>
+          <div class="wr-card-prize" id="sorteoSilverName">—</div>
+          <div class="wr-card-wager">$15.000 + 2 giros apostador</div>
+          <div class="wr-card-pct">+75 pts jugador</div>
         </div>
         <div class="wr-card gold">
           <div class="wr-card-pos">🥇</div>
-          <div class="wr-card-name" id="wr1name">—</div>
-          <div class="wr-card-wager" id="wr1wager">$0 apostado</div>
-          <div class="wr-card-prize-lbl">Premio</div>
-          <div class="wr-card-prize" id="wr1prize">$0</div>
-          <div class="wr-card-pct" id="wr1pct">+2% del wagger</div>
+          <div class="wr-card-prize-lbl">Caja Oro</div>
+          <div class="wr-card-prize" id="sorteoGoldName">—</div>
+          <div class="wr-card-wager">$25.000 + 3 giros apostador</div>
+          <div class="wr-card-pct">+100 pts jugador</div>
         </div>
         <div class="wr-card bronze">
           <div class="wr-card-pos">🥉</div>
-          <div class="wr-card-name" id="wr3name">—</div>
-          <div class="wr-card-wager" id="wr3wager">$0 apostado</div>
-          <div class="wr-card-prize-lbl">Premio</div>
-          <div class="wr-card-prize" id="wr3prize">$0</div>
-          <div class="wr-card-pct" id="wr3pct">+2% del wagger</div>
+          <div class="wr-card-prize-lbl">Caja Bronce</div>
+          <div class="wr-card-prize" id="sorteoBronzeName">—</div>
+          <div class="wr-card-wager">$10.000 + 1 giro apostador</div>
+          <div class="wr-card-pct">+50 pts jugador</div>
         </div>
       </div>
 
-      <!-- Tabla 4-13 -->
+      <!-- Lista de participantes -->
       <div class="wr-table">
         <div class="wr-table-header">
-          <div>#</div><div>Usuario</div><div>Apostado</div><div style="text-align:right">Premio / Pts</div>
+          <div style="grid-column:1/-1">Participantes de esta semana</div>
         </div>
-        <div id="wrTable"><div class="wr-empty">Cargando resultados...</div></div>
+        <div id="sorteoTable"><div class="wr-empty">Todavía no se cargaron participantes esta semana.</div></div>
       </div>
 
       <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:20px;line-height:1.6">
-        Los premios fijos se acreditan en tu cuenta de Stake Argentina al finalizar la semana.<br>
-        El 2% del wagger se calcula sobre el total apostado durante la semana.
+        Participan todos los referidos que hicieron un depósito de al menos $5.000 en los últimos 7 días.<br>
+        Por participar sumás <strong>+10 puntos de jugador</strong>. Los 3 ganadores se sortean al azar entre todos los cargados.<br>
+        Los premios en efectivo se acreditan en tu cuenta de Stake Argentina.
       </p>
     </div>
   </section>
@@ -806,54 +857,31 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
         <!-- Wager Race Admin -->
         <div class="admin-card wr-admin-card" style="grid-column:1/-1">
           <div class="admin-card-title" style="display:flex;align-items:center;justify-content:space-between">
-            🏁 Wager Race — Cargar datos
-            <span style="font-size:11px;color:var(--muted);font-weight:400;text-transform:none">Se resetea automáticamente cada lunes</span>
+            🎁 Sorteo Semanal de Depósitos
+            <span style="font-size:11px;color:var(--muted);font-weight:400;text-transform:none">Cargar participantes y sortear ganadores</span>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-            <div>
-              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Premio fijo 1° lugar (ARS)</label>
-              <input class="admin-input" id="wrPrize1" value="100000" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
-            </div>
-            <div>
-              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Premio fijo 2° lugar (ARS)</label>
-              <input class="admin-input" id="wrPrize2" value="50000" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
-            </div>
-            <div>
-              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Premio fijo 3° lugar (ARS)</label>
-              <input class="admin-input" id="wrPrize3" value="25000" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
-            </div>
-            <div>
-              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Premio fijo 4°–10° (ARS)</label>
-              <input class="admin-input" id="wrPrize4to10" value="7500" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
-            </div>
-            <div>
-              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">% del wagger para todos</label>
-              <input class="admin-input" id="wrPct" value="2" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
-            </div>
-            <div>
-              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Tope máximo total (ARS)</label>
-              <input class="admin-input" id="wrCap" value="500000" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
-            </div>
-            <div>
-              <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Puntos gambler (11°–50°)</label>
-              <input class="admin-input" id="wrPts1150" value="10" style="font-family:'Inter',sans-serif;font-size:16px;text-align:center"/>
-            </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">
+            Ordená tus "Referred Users" en Stake por <strong>Last Deposit Date</strong> y cargá acá los usuarios que depositaron al menos $5.000 en los últimos 7 días (1 por línea).<br>
+            Premios: 🥇 Oro $25.000 + 3 giros apostador · 🥈 Plata $15.000 + 2 giros · 🥉 Bronce $10.000 + 1 giro.<br>
+            Todos los cargados suman +10 pts de jugador al ejecutar el sorteo.
           </div>
 
-          <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
-            Jugadores esta semana — poné el username (parcial está bien) y el monto waggereado:
-          </div>
+          <div id="sorteoCurrentWinners" style="margin-bottom:14px"></div>
 
-          <div id="wrPlayersInputs">
+          <div id="sorteoPlayersInputs">
             <!-- Generated dynamically -->
           </div>
 
           <div style="display:flex;gap:10px;margin-top:12px">
-            <button class="admin-btn btn-green" style="flex:1" onclick="saveWagerRace()">GUARDAR Y PUBLICAR</button>
-            <button class="admin-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted)" onclick="addWrPlayer()">+ Jugador</button>
+            <button class="admin-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted)" onclick="addSorteoPlayer()">+ Participante</button>
+            <button class="admin-btn btn-green" style="flex:1" onclick="saveSorteoParticipants()">GUARDAR PARTICIPANTES</button>
           </div>
-          <div class="admin-msg" id="wrAdminMsg"></div>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="admin-btn" style="flex:1;background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold)" onclick="runSorteo()">🎲 SORTEAR GANADORES</button>
+            <button class="admin-btn" style="background:#FF475711;border:1px solid #FF475766;color:#FF4757" onclick="resetSorteo()">↻ Reiniciar semana</button>
+          </div>
+          <div class="admin-msg" id="sorteoAdminMsg"></div>
         </div>
         <div class="admin-card" style="grid-column:1/-1">
           <div class="admin-card-title" style="display:flex;align-items:center;justify-content:space-between">
@@ -906,23 +934,31 @@ async function supaGet(username) {
   if(!data || !data[0]) return null;
   const u = data[0];
   return {
-    username:      u.username,
-    kickId:        u.kickID || '',
-    pts:           u.pts || 0,
-    spins:         u.spins || 0,
-    wins:          u.wins || 0,
-    lastSpinDate:  u.lastspindate || ''
+    username:          u.username,
+    kickId:            u.kickID || '',
+    pts:               u.pts || 0,
+    spins:             u.spins || 0,
+    wins:              u.wins || 0,
+    lastSpinDate:      u.lastspindate || '',
+    gamblerPts:        u.gamblerpts || 0,
+    pendingSpins:      u.pendingspins || 0,
+    lastApostadorSpin: u.lastapostadorspin || '',
+    gamblerSpins:      u.gamblerspins || 0
   };
 }
 
 async function supaUpsert(userObj) {
   const row = {
-    username:      userObj.username,
-    kickID:        userObj.kickId || userObj.kickID || '',
-    pts:           userObj.pts || 0,
-    spins:         userObj.spins || 0,
-    wins:          userObj.wins || 0,
-    lastspindate:  userObj.lastSpinDate || userObj.lastspindate || ''
+    username:          userObj.username,
+    kickID:            userObj.kickId || userObj.kickID || '',
+    pts:               userObj.pts || 0,
+    spins:             userObj.spins || 0,
+    wins:              userObj.wins || 0,
+    lastspindate:      userObj.lastSpinDate || userObj.lastspindate || '',
+    gamblerpts:        userObj.gamblerPts || 0,
+    pendingspins:      userObj.pendingSpins || 0,
+    lastapostadorspin: userObj.lastApostadorSpin || userObj.lastapostadorspin || '',
+    gamblerspins:      userObj.gamblerSpins || 0
   };
   const res = await fetch(`${SUPA_URL}/rest/v1/users`, {
     method: 'POST',
@@ -943,12 +979,16 @@ async function supaList() {
   });
   const data = await res.json() || [];
   return data.map(u => ({
-    username:     u.username,
-    kickId:       u.kickID || '',
-    pts:          u.pts || 0,
-    spins:        u.spins || 0,
-    wins:         u.wins || 0,
-    lastSpinDate: u.lastspindate || ''
+    username:          u.username,
+    kickId:            u.kickID || '',
+    pts:               u.pts || 0,
+    spins:             u.spins || 0,
+    wins:              u.wins || 0,
+    lastSpinDate:      u.lastspindate || '',
+    gamblerPts:        u.gamblerpts || 0,
+    pendingSpins:      u.pendingspins || 0,
+    lastApostadorSpin: u.lastapostadorspin || '',
+    gamblerSpins:      u.gamblerspins || 0
   }));
 }
 
@@ -1005,12 +1045,16 @@ async function stGetMany(keys) {
   const result = {};
   data.forEach(u => {
     result['user:'+u.username] = {
-      username:     u.username,
-      kickId:       u.kickID || '',
-      pts:          u.pts || 0,
-      spins:        u.spins || 0,
-      wins:         u.wins || 0,
-      lastSpinDate: u.lastspindate || ''
+      username:          u.username,
+      kickId:            u.kickID || '',
+      pts:               u.pts || 0,
+      spins:             u.spins || 0,
+      wins:              u.wins || 0,
+      lastSpinDate:      u.lastspindate || '',
+      gamblerPts:        u.gamblerpts || 0,
+      pendingSpins:      u.pendingspins || 0,
+      lastApostadorSpin: u.lastapostadorspin || '',
+      gamblerSpins:      u.gamblerspins || 0
     };
   });
   return result;
@@ -1232,7 +1276,7 @@ function loginAs(data) {
       startViewingTimer();
       updateLiveStatus();
       setInterval(updateLiveStatus, 2 * 60 * 1000);
-      loadWagerRace();
+      loadSorteo();
       updateWrTimer();
       setInterval(updateWrTimer, 1000);
       loadSportsData();
@@ -1262,6 +1306,15 @@ function updateNavUser() {
   }
   // Update wheel for current rank
   updateWheelForRank(rank);
+  // Update apostador wheel (visible if pendingSpins > 0)
+  updateApostadorWheel();
+  // Update player rank badge in profile card
+  const playerRank = getPlayerRank(userData.gamblerPts||0);
+  const playerRankEl = document.getElementById('myCardPlayerRankBadge');
+  if(playerRankEl) {
+    playerRankEl.textContent = playerRank.emoji + ' ' + playerRank.name;
+    playerRankEl.style.color = playerRank.color;
+  }
   // Update spin count available
   checkSpinStatus();
 }
@@ -1281,9 +1334,56 @@ function getViewerRank(pts) {
   return VIEWER_RANKS.find(r => (pts||0) >= r.min) || VIEWER_RANKS[VIEWER_RANKS.length-1];
 }
 
+// ══════════════════════════════════════════════
+//  PLAYER RANK SYSTEM (rango jugador — paralelo al viewer)
+//  Misma progresión/umbrales, pero la fuente de puntos es el
+//  Sorteo Semanal de Depósitos (participación + premios), no el wagger.
+//  Estos puntos NUNCA se gastan — solo determinan el rango jugador.
+// ══════════════════════════════════════════════
+const PLAYER_RANKS = [
+  { name:'Legend',   emoji:'🐉', min:10000, color:'#C9A84C', glow:'#C9A84C' },
+  { name:'Elite',    emoji:'🃏', min:5000,  color:'#00D0FF', glow:'#00D0FF' },
+  { name:'Pro',      emoji:'🎲', min:1500,  color:'#9B59B6', glow:'#9B59B6' },
+  { name:'Regular',  emoji:'🪙', min:500,   color:'#00D084', glow:'#00D084' },
+  { name:'Beginner', emoji:'🔰', min:0,     color:'#6B6B80', glow:'none'    },
+];
+
+function getPlayerRank(gamblerPts) {
+  return PLAYER_RANKS.find(r => (gamblerPts||0) >= r.min) || PLAYER_RANKS[PLAYER_RANKS.length-1];
+}
+
+// Otorga puntos de jugador a un usuario y actualiza su banco de giros pendientes
+// (cada vez que el total cruza un múltiplo de 50, suma 1 giro pendiente).
+// Devuelve el usuario actualizado (ya guardado en Supabase).
+async function awardGamblerPoints(username, amount) {
+  const u = await stGet('user:'+username);
+  if(!u) return null;
+  const before = u.gamblerPts || 0;
+  const after  = before + amount;
+
+  const milestonesBefore = Math.floor(before / 50);
+  const milestonesAfter  = Math.floor(after  / 50);
+  const newSpins = Math.max(0, milestonesAfter - milestonesBefore);
+
+  u.gamblerPts   = after;
+  u.pendingSpins = (u.pendingSpins || 0) + newSpins;
+
+  await stSet('user:'+username, u);
+  return { user: u, newSpins };
+}
+
 // Wheel segments per rank
-// Premios en plata por nivel (ARS)
+// ── RULETA VIEWER (diaria) — premios reducidos en plata por nivel (ARS) ──
 const RANK_PRIZES = {
+  Beginner: { p1: 500,   p2: 1500, p3: 3000,  jackpot: 15000  },
+  Regular:  { p1: 750,   p2: 2500, p3: 5000,  jackpot: 30000  },
+  Pro:      { p1: 1000,  p2: 3500, p3: 7000,  jackpot: 50000  },
+  Elite:    { p1: 1500,  p2: 5000, p3: 10000, jackpot: 75000  },
+  Legend:   { p1: 2000,  p2: 7000, p3: 15000, jackpot: 100000 },
+};
+
+// ── RULETA APOSTADOR (sorteo/banco de giros) — premios ORIGINALES, jackpot real hasta $500k ──
+const PLAYER_RANK_PRIZES = {
   Beginner: { p1: 1000,  p2: 5000,  p3: 10000,  jackpot: 100000  },
   Regular:  { p1: 1500,  p2: 7500,  p3: 15000,  jackpot: 150000  },
   Pro:      { p1: 2000,  p2: 10000, p3: 20000,  jackpot: 200000  },
@@ -1293,8 +1393,9 @@ const RANK_PRIZES = {
 
 // Total weights = 10000 para mayor precisión
 // 25pts=60%, 50pts=25%, $p1=8%, $p2=4%, $p3=2%, $jackpot=0.1%, 5pts(mala suerte)=0.9%
-function buildSegmentsForRank(rankName) {
-  const p = RANK_PRIZES[rankName] || RANK_PRIZES.Beginner;
+function buildSegmentsForRank(rankName, prizesTable) {
+  const table = prizesTable || RANK_PRIZES;
+  const p = table[rankName] || table.Beginner;
   const fmt = (n) => '$' + n.toLocaleString('es-AR');
   // prob = probabilidad interna (de 10000). Visual siempre igual (7 segmentos iguales)
   return [
@@ -1309,15 +1410,28 @@ function buildSegmentsForRank(rankName) {
 }
 
 const WHEEL_SEGMENTS = {
-  Beginner: buildSegmentsForRank('Beginner'),
-  Regular:  buildSegmentsForRank('Regular'),
-  Pro:      buildSegmentsForRank('Pro'),
-  Elite:    buildSegmentsForRank('Elite'),
-  Legend:   buildSegmentsForRank('Legend'),
+  Beginner: buildSegmentsForRank('Beginner', RANK_PRIZES),
+  Regular:  buildSegmentsForRank('Regular',  RANK_PRIZES),
+  Pro:      buildSegmentsForRank('Pro',      RANK_PRIZES),
+  Elite:    buildSegmentsForRank('Elite',    RANK_PRIZES),
+  Legend:   buildSegmentsForRank('Legend',   RANK_PRIZES),
+};
+
+// Ruleta Apostador — mismas probabilidades, premios originales grandes (jackpot real hasta $500k)
+const APOSTADOR_WHEEL_SEGMENTS = {
+  Beginner: buildSegmentsForRank('Beginner', PLAYER_RANK_PRIZES),
+  Regular:  buildSegmentsForRank('Regular',  PLAYER_RANK_PRIZES),
+  Pro:      buildSegmentsForRank('Pro',      PLAYER_RANK_PRIZES),
+  Elite:    buildSegmentsForRank('Elite',    PLAYER_RANK_PRIZES),
+  Legend:   buildSegmentsForRank('Legend',   PLAYER_RANK_PRIZES),
 };
 
 function getSegmentsForRank(rank) {
   return WHEEL_SEGMENTS[rank.name] || WHEEL_SEGMENTS.Beginner;
+}
+
+function getApostadorSegmentsForRank(playerRank) {
+  return APOSTADOR_WHEEL_SEGMENTS[playerRank.name] || APOSTADOR_WHEEL_SEGMENTS.Beginner;
 }
 
 function getRankBadge(rank) {
@@ -1341,7 +1455,7 @@ function getDailyCode() {
   return `${l1}${l2}${l3}${n1}${n2}${n3}`;
 }
 // ══════════════════════════════════════════════
-//  WHEEL — dynamic per rank
+//  WHEEL — dynamic per rank (genérico, soporta múltiples ruedas)
 // ══════════════════════════════════════════════
 const canvas = document.getElementById('wheelCanvas');
 const ctx = canvas.getContext('2d');
@@ -1351,15 +1465,16 @@ let segments = WHEEL_SEGMENTS.Beginner;
 let pool = [];
 
 function buildPool(segs) {
-  pool = [];
-  segs.forEach((s,i)=>{ for(let j=0;j<s.prob;j++) pool.push(i); });
+  const p = [];
+  segs.forEach((s,i)=>{ for(let j=0;j<s.prob;j++) p.push(i); });
+  return p;
 }
-buildPool(segments);
+pool = buildPool(segments);
 
 function updateWheelForRank(rank) {
   segments = getSegmentsForRank(rank);
-  buildPool(segments);
-  drawWheel(currentAngle);
+  pool = buildPool(segments);
+  drawWheelOn(ctx, segments, currentAngle, W, H, R, cx, cy);
   // Update rank label on wheel section
   const rankLabel = document.getElementById('wheelRankLabel');
   if(rankLabel) {
@@ -1386,56 +1501,63 @@ function incrementSpinsToday() {
   localStorage.setItem(key, getSpinsUsedToday() + 1);
 }
 
-function drawWheel(angle) {
-  ctx.clearRect(0,0,W,H);
-  const arc = (Math.PI*2)/segments.length;
+// Dibuja una rueda en cualquier canvas/contexto dado — permite tener
+// la ruleta viewer y la ruleta apostador como instancias independientes.
+function drawWheelOn(ctxRef, segs, angle, w, h, r, ccx, ccy) {
+  ctxRef.clearRect(0,0,w,h);
+  const arc = (Math.PI*2)/segs.length;
 
   // Draw segments
-  segments.forEach((seg,i)=>{
+  segs.forEach((seg,i)=>{
     const start=angle+i*arc, end=start+arc;
 
     // Segment fill
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,start,end); ctx.closePath();
-    ctx.fillStyle=seg.color; ctx.fill();
+    ctxRef.beginPath(); ctxRef.moveTo(ccx,ccy); ctxRef.arc(ccx,ccy,r,start,end); ctxRef.closePath();
+    ctxRef.fillStyle=seg.color; ctxRef.fill();
 
     // Segment border
-    ctx.strokeStyle='rgba(201,168,76,0.6)'; ctx.lineWidth=3; ctx.stroke();
+    ctxRef.strokeStyle='rgba(201,168,76,0.6)'; ctxRef.lineWidth=3; ctxRef.stroke();
 
     // Text
-    ctx.save();
-    ctx.translate(cx,cy);
-    ctx.rotate(start+arc/2);
+    ctxRef.save();
+    ctxRef.translate(ccx,ccy);
+    ctxRef.rotate(start+arc/2);
 
     // Background pill for text
-    const textX = R - 24;
-    ctx.textAlign='right';
-    ctx.font='bold 18px Inter,sans-serif';
-    ctx.shadowColor='rgba(0,0,0,0.8)'; ctx.shadowBlur=6;
-    ctx.fillStyle='#ffffff';
-    ctx.fillText(seg.label, textX, 6);
-    ctx.restore();
+    const textX = r - 24;
+    ctxRef.textAlign='right';
+    ctxRef.font='bold 18px Inter,sans-serif';
+    ctxRef.shadowColor='rgba(0,0,0,0.8)'; ctxRef.shadowBlur=6;
+    ctxRef.fillStyle='#ffffff';
+    ctxRef.fillText(seg.label, textX, 6);
+    ctxRef.restore();
   });
 
   // Outer decorative rings
-  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
-  ctx.strokeStyle='#C9A84C'; ctx.lineWidth=6; ctx.stroke();
+  ctxRef.beginPath(); ctxRef.arc(ccx,ccy,r,0,Math.PI*2);
+  ctxRef.strokeStyle='#C9A84C'; ctxRef.lineWidth=6; ctxRef.stroke();
 
-  ctx.beginPath(); ctx.arc(cx,cy,R+8,0,Math.PI*2);
-  ctx.strokeStyle='rgba(201,168,76,0.3)'; ctx.lineWidth=3; ctx.stroke();
+  ctxRef.beginPath(); ctxRef.arc(ccx,ccy,r+8,0,Math.PI*2);
+  ctxRef.strokeStyle='rgba(201,168,76,0.3)'; ctxRef.lineWidth=3; ctxRef.stroke();
 
   // Inner ring
-  ctx.beginPath(); ctx.arc(cx,cy,R*0.15,0,Math.PI*2);
-  ctx.fillStyle='#0A0A0F'; ctx.fill();
-  ctx.strokeStyle='#C9A84C'; ctx.lineWidth=4; ctx.stroke();
+  ctxRef.beginPath(); ctxRef.arc(ccx,ccy,r*0.15,0,Math.PI*2);
+  ctxRef.fillStyle='#0A0A0F'; ctxRef.fill();
+  ctxRef.strokeStyle='#C9A84C'; ctxRef.lineWidth=4; ctxRef.stroke();
 
   // Dots on outer ring at segment boundaries
-  segments.forEach((_,i) => {
+  segs.forEach((_,i) => {
     const angle2 = angle + i * arc;
-    const dotX = cx + (R+2) * Math.cos(angle2);
-    const dotY = cy + (R+2) * Math.sin(angle2);
-    ctx.beginPath(); ctx.arc(dotX, dotY, 5, 0, Math.PI*2);
-    ctx.fillStyle='#C9A84C'; ctx.fill();
+    const dotX = ccx + (r+2) * Math.cos(angle2);
+    const dotY = ccy + (r+2) * Math.sin(angle2);
+    ctxRef.beginPath(); ctxRef.arc(dotX, dotY, 5, 0, Math.PI*2);
+    ctxRef.fillStyle='#C9A84C'; ctxRef.fill();
   });
+}
+
+// Wrapper de compatibilidad — dibuja la rueda viewer (canvas principal)
+function drawWheel(angle) {
+  drawWheelOn(ctx, segments, angle, W, H, R, cx, cy);
 }
 drawWheel(currentAngle);
 
@@ -1655,6 +1777,123 @@ function updateMyCard() {
 }
 
 // ══════════════════════════════════════════════
+//  RULETA APOSTADOR — premios grandes (jackpot real hasta $500k)
+//  Se habilita cuando userData.pendingSpins > 0 y no se usó hoy.
+// ══════════════════════════════════════════════
+const canvasApostador = document.getElementById('wheelCanvasApostador');
+const ctxApostador = canvasApostador.getContext('2d');
+const WA=canvasApostador.width, HA=canvasApostador.height, RA=WA/2-10, cxA=WA/2, cyA=HA/2;
+let currentAngleApostador = 0;
+let segmentsApostador = APOSTADOR_WHEEL_SEGMENTS.Beginner;
+let poolApostador = [];
+let spinningApostador = false;
+
+function updateApostadorWheel() {
+  if(!userData) return;
+  const playerRank = getPlayerRank(userData.gamblerPts||0);
+  segmentsApostador = getApostadorSegmentsForRank(playerRank);
+  poolApostador = buildPool(segmentsApostador);
+  drawWheelOn(ctxApostador, segmentsApostador, currentAngleApostador, WA, HA, RA, cxA, cyA);
+
+  const rankLabel = document.getElementById('apostadorRankLabel');
+  if(rankLabel) {
+    rankLabel.innerHTML = `${playerRank.emoji} Ruleta <span style="color:${playerRank.color}">${playerRank.name}</span>`;
+  }
+
+  const section = document.getElementById('ruletaApostador');
+  const pendingLabel = document.getElementById('pendingSpinsLabel');
+  const btn = document.getElementById('spinBtnApostador');
+  const pending = userData.pendingSpins || 0;
+  const usedToday = userData.lastApostadorSpin === todayStr();
+
+  if(pending <= 0) {
+    // Sin giros pendientes — ocultar sección
+    if(section) section.style.display = 'none';
+    return;
+  }
+
+  if(section) section.style.display = '';
+
+  if(usedToday) {
+    if(pendingLabel) pendingLabel.textContent = `${pending} giro${pending>1?'s':''} en cola — ya usaste tu giro de hoy`;
+    if(btn) btn.disabled = true;
+  } else {
+    if(pendingLabel) pendingLabel.textContent = `${pending} giro${pending>1?'s':''} disponible${pending>1?'s':''} — 1 por día`;
+    if(btn) btn.disabled = false;
+  }
+}
+
+function drawWheelApostador(angle) {
+  drawWheelOn(ctxApostador, segmentsApostador, angle, WA, HA, RA, cxA, cyA);
+}
+drawWheelApostador(currentAngleApostador);
+
+document.getElementById('spinBtnApostador').addEventListener('click', async ()=>{
+  if(spinningApostador) return;
+  const pending = userData.pendingSpins || 0;
+  const usedToday = userData.lastApostadorSpin === todayStr();
+  if(pending <= 0 || usedToday) return;
+
+  spinningApostador = true;
+  document.getElementById('spinBtnApostador').disabled = true;
+
+  const winIdx = poolApostador[Math.floor(Math.random()*poolApostador.length)];
+  const arc = (Math.PI*2)/segmentsApostador.length;
+  const targetCenter = winIdx*arc+arc/2;
+  const spins = 5+Math.random()*3;
+  const totalRot = spins*Math.PI*2+(Math.PI*2-targetCenter-currentAngleApostador%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
+  const start = performance.now();
+  const duration = 4200+Math.random()*900;
+  const startAngle = currentAngleApostador;
+
+  function ease(t){ return 1-Math.pow(1-t,4); }
+  let lastClickDeg = -1;
+  function animate(now){
+    const p=Math.min((now-start)/duration,1);
+    currentAngleApostador=startAngle+totalRot*ease(p);
+    drawWheelApostador(currentAngleApostador);
+    const deg = Math.floor(((currentAngleApostador % (Math.PI*2)) / (Math.PI*2)) * segmentsApostador.length * 4);
+    if(deg !== lastClickDeg) { lastClickDeg = deg; playSpinSound(true); }
+    if(p<1){ requestAnimationFrame(animate); }
+    else {
+      spinningApostador=false;
+      onApostadorSpinComplete(segmentsApostador[winIdx]);
+    }
+  }
+  requestAnimationFrame(animate);
+});
+
+async function onApostadorSpinComplete(seg) {
+  // Los puntos de jugador (gamblerPts) NO se gastan; este giro consume 1 del banco.
+  userData.pendingSpins      = Math.max(0, (userData.pendingSpins||0) - 1);
+  userData.lastApostadorSpin = todayStr();
+  userData.gamblerSpins      = (userData.gamblerSpins||0) + 1;
+  if(seg.cash > 0) userData.wins = (userData.wins||0) + 1;
+  // Los puntos "bonus" de este segmento (25/50/5) van al pozo de puntos VIEWER, no gambler
+  userData.pts = (userData.pts||0) + (seg.pts||0);
+
+  await stSet('user:'+currentUser.username, userData);
+
+  updateNavUser();
+  updateMyCard();
+  updateApostadorWheel();
+  loadRanking();
+
+  const isCash    = seg.cash > 0;
+  const isJackpot = seg.cash >= 100000;
+  const isNothing = !seg.pts && !seg.cash;
+
+  playWinSound(isCash, isJackpot);
+  if(isCash) spawnMoneyEmoji(isJackpot ? 30 : 15);
+
+  document.getElementById('modalEmoji').textContent = seg.emoji;
+  document.getElementById('modalTitle').textContent = isJackpot ? '¡¡JACKPOT!!' : isCash ? '¡GANASTE!' : isNothing ? 'MALA SUERTE' : '¡SUMASTE!';
+  document.getElementById('modalPrize').textContent = seg.prize;
+  document.getElementById('modalDesc').textContent  = seg.desc;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+// ══════════════════════════════════════════════
 //  STATS
 // ══════════════════════════════════════════════
 async function loadStats() {
@@ -1739,7 +1978,7 @@ function adminLogin() {
     document.getElementById('adminLoginBox').style.display   = 'none';
     document.getElementById('adminDashboard').style.display  = '';
     loadAdminData();
-    loadWrAdminData();
+    loadSorteoAdminData();
   } else {
     document.getElementById('adminLoginMsg').style.color = 'var(--red)';
     document.getElementById('adminLoginMsg').textContent = 'Contraseña incorrecta.';
@@ -1781,6 +2020,7 @@ async function loadAdminData() {
     const progressPct = nextRank
       ? Math.round(((u.pts||0) - rank.min) / (nextRank.min - rank.min) * 100)
       : 100;
+    const playerRank = getPlayerRank(u.gamblerPts||0);
     return `
     <div class="admin-user-row" style="flex-direction:column;align-items:stretch;gap:10px">
       <div style="display:flex;align-items:center;gap:12px">
@@ -1789,6 +2029,7 @@ async function loadAdminData() {
         <div style="flex:1">
           <div style="font-weight:600;font-size:14px">${u.username}</div>
           <div style="font-size:11px;color:${rank.color};font-weight:600">${rank.name}${nextRank ? ' \u2192 ' + ptsToNext + ' pts para ' + nextRank.name : ' (M\u00c1XIMO)'}</div>
+          <div style="font-size:10px;color:${playerRank.color};margin-top:2px">${playerRank.emoji} Jugador ${playerRank.name} · ${u.gamblerPts||0} pts · ${u.pendingSpins||0} giros apostador pendientes</div>
         </div>
         <div style="text-align:right">
           <div class="admin-user-pts">${(u.pts||0).toLocaleString('es-AR')} pts</div>
@@ -1807,6 +2048,8 @@ async function loadAdminData() {
           <button onclick="adminAddPts('${u.username}', -100)" style="background:#FF475711;border:1px solid #FF475766;color:#FF4757;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">-100</button>
           <button onclick="adminAddPts('${u.username}', -500)" style="background:#FF475711;border:1px solid #FF475766;color:#FF4757;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif">-500</button>
           <button onclick="adminSetPts('${u.username}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">✏️</button>
+          <button onclick="adminAddGamblerPts('${u.username}', 10)" style="background:#9B59B622;border:1px solid #9B59B6;color:#9B59B6;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif" title="Dar puntos de jugador">🎲+10</button>
+          <button onclick="adminAddPendingSpins('${u.username}', 1)" style="background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);padding:4px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:700;font-family:'Inter',sans-serif" title="Dar giro apostador">🎰+1</button>
         </div>
       </div>
     </div>`;
@@ -1890,6 +2133,32 @@ async function adminSetPts(username) {
     updateMyCard();
   }
   showToast(`✓ ${username} → ${pts} pts`);
+  setTimeout(()=>loadAdminData(), 400);
+}
+
+async function adminAddGamblerPts(username, amount) {
+  const result = await awardGamblerPoints(username, amount);
+  if(!result) return;
+  if(currentUser && currentUser.username === username) {
+    userData.gamblerPts   = result.user.gamblerPts;
+    userData.pendingSpins = result.user.pendingSpins;
+    updateNavUser();
+  }
+  const extra = result.newSpins > 0 ? ` (+${result.newSpins} giro apostador)` : '';
+  showToast(`🎲 +${amount} pts jugador a ${username}${extra}`);
+  setTimeout(()=>loadAdminData(), 400);
+}
+
+async function adminAddPendingSpins(username, amount) {
+  const u = await stGet('user:'+username);
+  if(!u) return;
+  u.pendingSpins = (u.pendingSpins||0) + amount;
+  await stSet('user:'+username, u);
+  if(currentUser && currentUser.username === username) {
+    userData.pendingSpins = u.pendingSpins;
+    updateApostadorWheel();
+  }
+  showToast(`🎰 +${amount} giro apostador a ${username}`);
   setTimeout(()=>loadAdminData(), 400);
 }
 
@@ -2206,9 +2475,15 @@ async function loadSportsData() {
 }
 
 // ══════════════════════════════════════════════
-//  WAGER RACE
+//  SORTEO SEMANAL DE DEPÓSITOS
+//  meta:sorteo = { participants: [{username}], winners: {gold, silver, bronze}, updatedAt }
 // ══════════════════════════════════════════════
-const WR_PRIZES = { 1: 100000, 2: 50000, 3: 25000, other: 7500, pct: 2, cap: 500000 };
+const SORTEO_PRIZES = {
+  gold:   { cash: 25000, spins: 3, pts: 100, label: 'Caja Oro 🥇' },
+  silver: { cash: 15000, spins: 2, pts: 75,  label: 'Caja Plata 🥈' },
+  bronze: { cash: 10000, spins: 1, pts: 50,  label: 'Caja Bronce 🥉' },
+};
+const SORTEO_PARTICIPATION_PTS = 10;
 
 function getNextMonday() {
   const now = new Date();
@@ -2224,7 +2499,7 @@ function updateWrTimer() {
   const end = getNextMonday();
   const now = new Date();
   const diff = end - now;
-  if(diff <= 0) { loadWagerRace(); return; }
+  if(diff <= 0) { loadSorteo(); return; }
   const d = Math.floor(diff / 86400000);
   const h = Math.floor((diff % 86400000) / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
@@ -2235,158 +2510,177 @@ function updateWrTimer() {
   document.getElementById('wrSecs').textContent  = String(s).padStart(2,'0');
 }
 
-function calcPrize(pos, wager, config) {
-  const prizes = { 1: config.prize1||100000, 2: config.prize2||50000, 3: config.prize3||25000 };
-  const fixed  = pos <= 3 ? prizes[pos] : (config.prize4to10||7500);
-  const pct    = Math.round(wager * (config.pct||2) / 100);
-  return fixed + pct;
-}
-
 function formatARS(n) {
   return '$' + Math.round(n).toLocaleString('es-AR');
 }
 
-async function loadWagerRace() {
-  const data = await stGet('meta:wagerrace');
-  if(!data) {
-    document.getElementById('wrTable').innerHTML = '<div class="wr-empty">No hay datos esta semana todavía.<br>¡Volvé pronto!</div>';
-    ['wr1name','wr2name','wr3name'].forEach(id=>document.getElementById(id).textContent='—');
-    document.getElementById('wrTotalPool').textContent = '$0';
-    document.getElementById('wrTotalPlayers').textContent = '0';
+async function loadSorteo() {
+  const data = await stGet('meta:sorteo');
+  const participants = (data && data.participants) || [];
+  const winners = (data && data.winners) || {};
+
+  document.getElementById('sorteoParticipants').textContent = participants.length;
+
+  const totalPool = SORTEO_PRIZES.gold.cash + SORTEO_PRIZES.silver.cash + SORTEO_PRIZES.bronze.cash;
+  document.getElementById('sorteoPool').textContent = formatARS(totalPool);
+
+  document.getElementById('sorteoGoldName').textContent   = winners.gold   || '—';
+  document.getElementById('sorteoSilverName').textContent = winners.silver || '—';
+  document.getElementById('sorteoBronzeName').textContent = winners.bronze || '—';
+
+  const table = document.getElementById('sorteoTable');
+  if(!participants.length) {
+    table.innerHTML = '<div class="wr-empty">Todavía no se cargaron participantes esta semana.</div>';
     return;
   }
 
-  const players = data.players || [];
-  const config  = data.config  || {};
-  players.sort((a,b) => b.wager - a.wager);
-
-  // Calc total pool
-  let totalPool = 0;
-  players.forEach((p,i) => { totalPool += calcPrize(i+1, p.wager, config); });
-  totalPool = Math.min(totalPool, config.cap || 500000);
-  document.getElementById('wrTotalPool').textContent = formatARS(totalPool);
-  document.getElementById('wrTotalPlayers').textContent = players.length;
-
-  // Top 3
-  const top3 = [players[0], players[1], players[2]];
-  const order = [1, 0, 2]; // silver, gold, bronze display order
-  const ids = ['wr2','wr1','wr3'];
-  order.forEach((idx, i) => {
-    const p = top3[idx];
-    const prefix = ids[i];
-    if(p) {
-      document.getElementById(prefix+'name').textContent   = p.username;
-      document.getElementById(prefix+'wager').textContent  = formatARS(p.wager) + ' apostado';
-      document.getElementById(prefix+'prize').textContent  = formatARS(calcPrize(idx+1, p.wager, config));
-      document.getElementById(prefix+'pct').textContent    = `+${config.pct||2}% del wagger`;
-    } else {
-      document.getElementById(prefix+'name').textContent  = '—';
-      document.getElementById(prefix+'wager').textContent = '$0 apostado';
-      document.getElementById(prefix+'prize').textContent = '$0';
-    }
-  });
-
-  // Table 4-50
-  const rest = players.slice(3, 50);
-  if(!rest.length) {
-    document.getElementById('wrTable').innerHTML = '<div class="wr-empty" style="padding:20px">Sin más posiciones esta semana.</div>';
-    return;
-  }
-
-  let html = '';
-  rest.forEach((p,i) => {
-    const pos = i + 4;
-    const hasPrize = pos <= 10;
-    const prize = hasPrize ? formatARS(calcPrize(pos, p.wager, config)) : '—';
-    const ptsVal = config.pts1150 || 10;
-    const pts = !hasPrize ? `<span style="color:var(--green);font-size:11px;font-weight:600">+${ptsVal} pts</span>` : '';
-
-    // Separator between prize zone and points zone
-    const separator = pos === 11 ? `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 20px;background:var(--bg);border-bottom:1px solid var(--border)">
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-        <span style="font-size:11px;color:var(--muted);white-space:nowrap">⭐ Zona de puntos — sin premio en plata</span>
-        <div style="flex:1;height:1px;background:var(--border)"></div>
-      </div>` : '';
-
-    html += separator + `
-    <div class="wr-table-row" style="${!hasPrize ? 'opacity:0.7' : ''}">
-      <div class="wr-pos" style="${pos<=3?'':'color:var(--muted)'}">${pos}</div>
+  table.innerHTML = participants.map((p, i) => {
+    let badge = '';
+    if(winners.gold === p.username)   badge = '<span style="color:var(--gold);font-weight:700;font-size:12px">🥇 GANADOR ORO</span>';
+    if(winners.silver === p.username) badge = '<span style="color:#C0C0C0;font-weight:700;font-size:12px">🥈 GANADOR PLATA</span>';
+    if(winners.bronze === p.username) badge = '<span style="color:#CD7F32;font-weight:700;font-size:12px">🥉 GANADOR BRONCE</span>';
+    return `
+    <div class="wr-table-row" style="grid-template-columns:48px 1fr 1fr">
+      <div class="wr-pos" style="color:var(--muted)">${i+1}</div>
       <div class="wr-name">${p.username}</div>
-      <div class="wr-wager">${formatARS(p.wager)}</div>
-      <div class="wr-prize-cell">${hasPrize ? prize : pts}</div>
+      <div class="wr-prize-cell" style="text-align:right">${badge || '<span style="color:var(--green);font-size:11px;font-weight:600">+'+SORTEO_PARTICIPATION_PTS+' pts</span>'}</div>
     </div>`;
-  });
-
-  document.getElementById('wrTable').innerHTML = html;
+  }).join('');
 }
 
 // ── ADMIN ──
-let wrPlayerCount = 0;
+let sorteoPlayerCount = 0;
 
-function addWrPlayer(name='', wager='') {
-  const container = document.getElementById('wrPlayersInputs');
-  const id = wrPlayerCount++;
+function addSorteoPlayer(name='') {
+  const container = document.getElementById('sorteoPlayersInputs');
+  const id = sorteoPlayerCount++;
   const div = document.createElement('div');
   div.className = 'wr-player-input';
-  div.id = 'wrp_'+id;
+  div.id = 'sorteop_'+id;
+  div.style.gridTemplateColumns = '1fr 50px';
   div.innerHTML = `
-    <input placeholder="Username (ej: *****tti)" value="${name}" id="wrpName_${id}"/>
-    <input placeholder="Wagger en ARS" value="${wager}" id="wrpWager_${id}" type="number"/>
-    <button onclick="document.getElementById('wrp_${id}').remove()"
+    <input placeholder="Username de Kick" value="${name}" id="sorteopName_${id}"/>
+    <button onclick="document.getElementById('sorteop_${id}').remove()"
       style="background:var(--red);color:#fff;border:none;padding:10px;border-radius:6px;cursor:pointer;font-size:13px">✕</button>
   `;
   container.appendChild(div);
 }
 
-async function loadWrAdminData() {
-  const data = await stGet('meta:wagerrace');
-  const container = document.getElementById('wrPlayersInputs');
+async function loadSorteoAdminData() {
+  const data = await stGet('meta:sorteo');
+  const container = document.getElementById('sorteoPlayersInputs');
   container.innerHTML = '';
-  wrPlayerCount = 0;
-  if(data) {
-    const c = data.config || {};
-    document.getElementById('wrPrize1').value     = c.prize1     || 100000;
-    document.getElementById('wrPrize2').value     = c.prize2     || 50000;
-    document.getElementById('wrPrize3').value     = c.prize3     || 25000;
-    document.getElementById('wrPrize4to10').value = c.prize4to10 || 7500;
-    document.getElementById('wrPct').value        = c.pct        || 2;
-    document.getElementById('wrCap').value        = c.cap        || 500000;
-    document.getElementById('wrPts1150').value    = c.pts1150    || 10;
-    (data.players || []).forEach(p => addWrPlayer(p.username, p.wager));
+  sorteoPlayerCount = 0;
+
+  const winnersDiv = document.getElementById('sorteoCurrentWinners');
+
+  if(data && data.participants && data.participants.length) {
+    data.participants.forEach(p => addSorteoPlayer(p.username));
   } else {
-    // Add 3 empty slots by default
-    addWrPlayer(); addWrPlayer(); addWrPlayer();
+    addSorteoPlayer(); addSorteoPlayer(); addSorteoPlayer();
+  }
+
+  if(data && data.winners && (data.winners.gold || data.winners.silver || data.winners.bronze)) {
+    winnersDiv.innerHTML = `
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Ganadores actuales de esta semana:</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${data.winners.gold   ? `<span style="background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);padding:4px 10px;border-radius:5px;font-size:12px;font-weight:700">🥇 ${data.winners.gold}</span>` : ''}
+        ${data.winners.silver ? `<span style="background:#C0C0C022;border:1px solid #C0C0C0;color:#C0C0C0;padding:4px 10px;border-radius:5px;font-size:12px;font-weight:700">🥈 ${data.winners.silver}</span>` : ''}
+        ${data.winners.bronze ? `<span style="background:#CD7F3222;border:1px solid #CD7F32;color:#CD7F32;padding:4px 10px;border-radius:5px;font-size:12px;font-weight:700">🥉 ${data.winners.bronze}</span>` : ''}
+      </div>`;
+  } else {
+    winnersDiv.innerHTML = '<div style="font-size:12px;color:var(--muted)">Todavía no se sorteó esta semana.</div>';
   }
 }
 
-async function saveWagerRace() {
-  const msg = document.getElementById('wrAdminMsg');
+// Guarda la lista de participantes (sin sortear todavía)
+async function saveSorteoParticipants() {
+  const msg = document.getElementById('sorteoAdminMsg');
   msg.textContent = 'Guardando...'; msg.style.color = 'var(--muted)';
 
-  const config = {
-    prize1:     parseInt(document.getElementById('wrPrize1').value)     || 100000,
-    prize2:     parseInt(document.getElementById('wrPrize2').value)     || 50000,
-    prize3:     parseInt(document.getElementById('wrPrize3').value)     || 25000,
-    prize4to10: parseInt(document.getElementById('wrPrize4to10').value) || 7500,
-    pct:        parseFloat(document.getElementById('wrPct').value)      || 2,
-    cap:        parseInt(document.getElementById('wrCap').value)        || 500000,
-    pts1150:    parseInt(document.getElementById('wrPts1150').value)    || 10,
-  };
-
-  const players = [];
-  document.querySelectorAll('.wr-player-input').forEach(row => {
-    const id    = row.id.replace('wrp_','');
-    const name  = document.getElementById('wrpName_'+id)?.value?.trim();
-    const wager = parseFloat(document.getElementById('wrpWager_'+id)?.value);
-    if(name && wager > 0) players.push({ username: name, wager });
+  const participants = [];
+  document.querySelectorAll('#sorteoPlayersInputs .wr-player-input').forEach(row => {
+    const id = row.id.replace('sorteop_','');
+    const name = document.getElementById('sorteopName_'+id)?.value?.trim().toLowerCase();
+    if(name) participants.push({ username: name });
   });
 
-  await stSet('meta:wagerrace', { config, players, updatedAt: Date.now() });
-  loadWagerRace();
+  const existing = await stGet('meta:sorteo') || {};
+  await stSet('meta:sorteo', { participants, winners: existing.winners || {}, updatedAt: Date.now() });
+
+  loadSorteo();
+  msg.style.color = 'var(--green)';
+  msg.textContent = `✓ ${participants.length} participantes guardados. Ahora podés ejecutar el sorteo.`;
+  setTimeout(()=>msg.textContent='', 4000);
+}
+
+// Ejecuta el sorteo: elige 3 ganadores sin repetición, otorga premios y reinicia para la próxima semana
+async function runSorteo() {
+  const msg = document.getElementById('sorteoAdminMsg');
+  const existing = await stGet('meta:sorteo');
+  const participants = (existing && existing.participants) || [];
+
+  if(participants.length < 1) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = 'Cargá al menos 1 participante antes de sortear.';
+    return;
+  }
+
+  if(!confirm(`¿Ejecutar el sorteo entre ${participants.length} participantes? Esta acción otorga puntos y premios a los usuarios y no se puede deshacer.`)) return;
+
+  msg.style.color = 'var(--muted)';
+  msg.textContent = 'Sorteando y otorgando premios...';
+
+  // 1. Todos los participantes suman puntos por participar
+  for(const p of participants) {
+    await awardGamblerPoints(p.username, SORTEO_PARTICIPATION_PTS);
+  }
+
+  // 2. Sorteo sin repetición: oro, plata, bronce
+  const pool = participants.map(p => p.username);
+  const winners = {};
+  ['gold','silver','bronze'].forEach(tier => {
+    if(pool.length === 0) return;
+    const idx = Math.floor(Math.random() * pool.length);
+    winners[tier] = pool.splice(idx, 1)[0];
+  });
+
+  // 3. Otorgar premios extra (puntos + giros) a los ganadores
+  for(const tier of ['gold','silver','bronze']) {
+    const username = winners[tier];
+    if(!username) continue;
+    const prize = SORTEO_PRIZES[tier];
+    const result = await awardGamblerPoints(username, prize.pts);
+    // Sumar giros de regalo directamente (más allá del banco por umbral)
+    const u = await stGet('user:'+username);
+    if(u) {
+      u.pendingSpins = (u.pendingSpins || 0) + prize.spins;
+      await stSet('user:'+username, u);
+    }
+  }
+
+  await stSet('meta:sorteo', { participants, winners, updatedAt: Date.now() });
+
+  loadSorteo();
+  loadSorteoAdminData();
 
   msg.style.color = 'var(--green)';
-  msg.textContent = `✓ Wager Race publicado con ${players.length} jugadores.`;
+  const summary = ['gold','silver','bronze']
+    .filter(t=>winners[t])
+    .map(t=>`${SORTEO_PRIZES[t].label}: ${winners[t]}`)
+    .join(' · ');
+  msg.textContent = `✓ Sorteo realizado — ${summary}`;
+}
+
+// Limpia la lista para arrancar la próxima semana (mantiene historial de ganadores en consola/manual)
+async function resetSorteo() {
+  if(!confirm('¿Reiniciar el sorteo para la próxima semana? Se borra la lista de participantes y ganadores actuales.')) return;
+  await stSet('meta:sorteo', { participants: [], winners: {}, updatedAt: Date.now() });
+  loadSorteo();
+  loadSorteoAdminData();
+  const msg = document.getElementById('sorteoAdminMsg');
+  msg.style.color = 'var(--green)';
+  msg.textContent = '✓ Sorteo reiniciado para la nueva semana.';
   setTimeout(()=>msg.textContent='', 4000);
 }
 
