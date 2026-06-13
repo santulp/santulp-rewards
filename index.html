@@ -326,6 +326,37 @@ canvas#wheelCanvas{width:380px;height:380px;border-radius:50%;position:relative;
   background:var(--border);color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .sp-game.is-live{border-left:2px solid var(--red)}
 
+/* ── SORTEO BOXES ── */
+.sorteo-boxes{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:16px;max-width:760px;margin:0 auto 48px;align-items:end}
+.sorteo-box{border-radius:16px;padding:32px 20px;text-align:center;position:relative;transition:transform .2s;overflow:hidden}
+.sorteo-box:hover{transform:translateY(-4px)}
+.sorteo-box::before{content:'';position:absolute;inset:0;opacity:.15;border-radius:16px}
+.sorteo-box.gold{border:2px solid #C9A84C;background:linear-gradient(135deg,#13131A,#1a1506);box-shadow:0 0 40px #C9A84C55,0 0 80px #C9A84C22,inset 0 1px 0 #C9A84C44}
+.sorteo-box.silver{border:2px solid #C0C0C0;background:linear-gradient(135deg,#13131A,#0e0e0e);box-shadow:0 0 30px #C0C0C044,0 0 60px #C0C0C015,inset 0 1px 0 #C0C0C033}
+.sorteo-box.bronze{border:2px solid #CD7F32;background:linear-gradient(135deg,#13131A,#110d06);box-shadow:0 0 30px #CD7F3244,0 0 60px #CD7F3215,inset 0 1px 0 #CD7F3233}
+.sorteo-box-icon{font-size:52px;margin-bottom:12px;filter:drop-shadow(0 0 12px currentColor)}
+.sorteo-box-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px}
+.sorteo-box.gold .sorteo-box-label{color:#C9A84C}
+.sorteo-box.silver .sorteo-box-label{color:#C0C0C0}
+.sorteo-box.bronze .sorteo-box-label{color:#CD7F32}
+.sorteo-box-winner{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--text);min-height:28px}
+.sorteo-box-winner.empty{color:var(--border2);font-size:16px}
+
+/* Banner de saldo reclamable */
+.claim-banner{display:none;background:linear-gradient(135deg,#1a1506,#13131A);
+  border:2px solid var(--gold);border-radius:12px;padding:20px 28px;
+  margin:0 24px 32px;max-width:760px;margin-left:auto;margin-right:auto;
+  box-shadow:0 0 32px #C9A84C33}
+.claim-banner.show{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.claim-banner-icon{font-size:36px;flex-shrink:0}
+.claim-banner-text{flex:1}
+.claim-banner-title{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold);letter-spacing:1px}
+.claim-banner-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.claim-btn{background:var(--gold);color:#0A0A0F;border:none;cursor:pointer;
+  padding:12px 24px;border-radius:7px;font-family:'Inter',sans-serif;font-weight:800;
+  font-size:14px;white-space:nowrap;text-decoration:none;display:inline-block;transition:all .2s}
+.claim-btn:hover{background:#e0bb60;box-shadow:0 0 20px #C9A84C66}
+
 /* ── WAGER RACE ── */
 .wr-hero{text-align:center;padding:60px 24px 40px;position:relative;overflow:hidden}
 .wr-hero::before{content:'';position:absolute;inset:0;
@@ -728,40 +759,39 @@ footer{border-top:1px solid var(--border);padding:28px 40px;
 
       <div class="wr-prizepool">
         <div class="wr-pool-box">
-          <div class="wr-pool-num" id="sorteoPool">$50.000</div>
-          <div class="wr-pool-lbl">Premio total en juego</div>
-        </div>
-        <div style="width:1px;height:48px;background:var(--border)"></div>
-        <div class="wr-pool-box">
           <div class="wr-pool-num" id="sorteoParticipants">0</div>
           <div class="wr-pool-lbl">Participantes esta semana</div>
         </div>
       </div>
     </div>
 
+    <!-- Banner saldo reclamable (visible solo si el usuario tiene premios pendientes) -->
+    <div class="claim-banner" id="claimBanner">
+      <div class="claim-banner-icon">💰</div>
+      <div class="claim-banner-text">
+        <div class="claim-banner-title" id="claimBannerTitle">¡Tenés un premio pendiente!</div>
+        <div class="claim-banner-sub" id="claimBannerSub">Mandá una foto del QR de tu cuenta de Stake por Telegram para recibir tu premio.</div>
+      </div>
+      <a href="https://t.me/+2r8Bt3WIWDZmYmEx" target="_blank" class="claim-btn">Reclamar por Telegram →</a>
+    </div>
+
     <!-- Cajas de premios -->
     <div style="max-width:760px;margin:0 auto;padding:0 24px 40px">
-      <div class="wr-top3" id="sorteoBoxes">
-        <div class="wr-card silver">
-          <div class="wr-card-pos">🥈</div>
-          <div class="wr-card-prize-lbl">Caja Plata</div>
-          <div class="wr-card-prize" id="sorteoSilverName">—</div>
-          <div class="wr-card-wager">$15.000 + 2 giros apostador</div>
-          <div class="wr-card-pct">+75 pts jugador</div>
+      <div class="sorteo-boxes">
+        <div class="sorteo-box silver">
+          <div class="sorteo-box-icon">🥈</div>
+          <div class="sorteo-box-label">Caja Plata</div>
+          <div class="sorteo-box-winner empty" id="sorteoSilverName">Por sortear</div>
         </div>
-        <div class="wr-card gold">
-          <div class="wr-card-pos">🥇</div>
-          <div class="wr-card-prize-lbl">Caja Oro</div>
-          <div class="wr-card-prize" id="sorteoGoldName">—</div>
-          <div class="wr-card-wager">$25.000 + 3 giros apostador</div>
-          <div class="wr-card-pct">+100 pts jugador</div>
+        <div class="sorteo-box gold">
+          <div class="sorteo-box-icon">🥇</div>
+          <div class="sorteo-box-label">Caja Oro</div>
+          <div class="sorteo-box-winner empty" id="sorteoGoldName">Por sortear</div>
         </div>
-        <div class="wr-card bronze">
-          <div class="wr-card-pos">🥉</div>
-          <div class="wr-card-prize-lbl">Caja Bronce</div>
-          <div class="wr-card-prize" id="sorteoBronzeName">—</div>
-          <div class="wr-card-wager">$10.000 + 1 giro apostador</div>
-          <div class="wr-card-pct">+50 pts jugador</div>
+        <div class="sorteo-box bronze">
+          <div class="sorteo-box-icon">🥉</div>
+          <div class="sorteo-box-label">Caja Bronce</div>
+          <div class="sorteo-box-winner empty" id="sorteoBronzeName">Por sortear</div>
         </div>
       </div>
 
@@ -943,7 +973,8 @@ async function supaGet(username) {
     gamblerPts:        u.gamblerpts || 0,
     pendingSpins:      u.pendingspins || 0,
     lastApostadorSpin: u.lastapostadorspin || '',
-    gamblerSpins:      u.gamblerspins || 0
+    gamblerSpins:      u.gamblerspins || 0,
+    pendingCash:       u.pendingcash || 0
   };
 }
 
@@ -958,7 +989,8 @@ async function supaUpsert(userObj) {
     gamblerpts:        userObj.gamblerPts || 0,
     pendingspins:      userObj.pendingSpins || 0,
     lastapostadorspin: userObj.lastApostadorSpin || userObj.lastapostadorspin || '',
-    gamblerspins:      userObj.gamblerSpins || 0
+    gamblerspins:      userObj.gamblerSpins || 0,
+    pendingcash:       userObj.pendingCash || 0
   };
   const res = await fetch(`${SUPA_URL}/rest/v1/users`, {
     method: 'POST',
@@ -988,7 +1020,8 @@ async function supaList() {
     gamblerPts:        u.gamblerpts || 0,
     pendingSpins:      u.pendingspins || 0,
     lastApostadorSpin: u.lastapostadorspin || '',
-    gamblerSpins:      u.gamblerspins || 0
+    gamblerSpins:      u.gamblerspins || 0,
+    pendingCash:       u.pendingcash || 0
   }));
 }
 
@@ -1054,7 +1087,8 @@ async function stGetMany(keys) {
       gamblerPts:        u.gamblerpts || 0,
       pendingSpins:      u.pendingspins || 0,
       lastApostadorSpin: u.lastapostadorspin || '',
-      gamblerSpins:      u.gamblerspins || 0
+      gamblerSpins:      u.gamblerspins || 0,
+      pendingCash:       u.pendingcash || 0
     };
   });
   return result;
@@ -2524,9 +2558,30 @@ async function loadSorteo() {
   const totalPool = SORTEO_PRIZES.gold.cash + SORTEO_PRIZES.silver.cash + SORTEO_PRIZES.bronze.cash;
   document.getElementById('sorteoPool').textContent = formatARS(totalPool);
 
-  document.getElementById('sorteoGoldName').textContent   = winners.gold   || '—';
-  document.getElementById('sorteoSilverName').textContent = winners.silver || '—';
-  document.getElementById('sorteoBronzeName').textContent = winners.bronze || '—';
+  document.getElementById('sorteoGoldName').textContent   = winners.gold   || 'Por sortear';
+  document.getElementById('sorteoSilverName').textContent = winners.silver || 'Por sortear';
+  document.getElementById('sorteoBronzeName').textContent = winners.bronze || 'Por sortear';
+
+  // Toggle "empty" style
+  ['sorteoGoldName','sorteoSilverName','sorteoBronzeName'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.toggle('empty', el.textContent === 'Por sortear');
+  });
+
+  // Show claim banner if current user won something
+  if(currentUser) {
+    const myUsername = currentUser.username;
+    const u = await stGet('user:'+myUsername);
+    const pendingCash = u?.pendingCash || 0;
+    const banner = document.getElementById('claimBanner');
+    if(pendingCash > 0) {
+      banner.classList.add('show');
+      document.getElementById('claimBannerTitle').textContent = `¡Tenés $${pendingCash.toLocaleString('es-AR')} ARS en tu caja!`;
+      document.getElementById('claimBannerSub').textContent = 'Mandá una foto del QR de tu cuenta de Stake por Telegram para recibir tu premio.';
+    } else {
+      banner.classList.remove('show');
+    }
+  }
 
   const table = document.getElementById('sorteoTable');
   if(!participants.length) {
@@ -2559,7 +2614,7 @@ function addSorteoPlayer(name='') {
   div.id = 'sorteop_'+id;
   div.style.gridTemplateColumns = '1fr 50px';
   div.innerHTML = `
-    <input placeholder="Username de Kick" value="${name}" id="sorteopName_${id}"/>
+    <input placeholder="Username de Stake (ej: ***lp)" value="${name}" id="sorteopName_${id}"/>
     <button onclick="document.getElementById('sorteop_${id}').remove()"
       style="background:var(--red);color:#fff;border:none;padding:10px;border-radius:6px;cursor:pointer;font-size:13px">✕</button>
   `;
@@ -2645,16 +2700,16 @@ async function runSorteo() {
     winners[tier] = pool.splice(idx, 1)[0];
   });
 
-  // 3. Otorgar premios extra (puntos + giros) a los ganadores
+  // 3. Otorgar premios extra (puntos + giros + cash pendiente) a los ganadores
   for(const tier of ['gold','silver','bronze']) {
     const username = winners[tier];
     if(!username) continue;
     const prize = SORTEO_PRIZES[tier];
-    const result = await awardGamblerPoints(username, prize.pts);
-    // Sumar giros de regalo directamente (más allá del banco por umbral)
+    await awardGamblerPoints(username, prize.pts);
     const u = await stGet('user:'+username);
     if(u) {
       u.pendingSpins = (u.pendingSpins || 0) + prize.spins;
+      u.pendingCash  = (u.pendingCash  || 0) + prize.cash;
       await stSet('user:'+username, u);
     }
   }
