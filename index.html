@@ -1792,7 +1792,10 @@ async function onSpinComplete(seg) {
   userData.pts         = (userData.pts||0) + (seg.pts||0);
   userData.spins       = (userData.spins||0) + 1;
   userData.lastSpinDate = todayStr();
-  if(seg.cash > 0) userData.wins = (userData.wins||0) + 1;
+  if(seg.cash > 0) {
+    userData.wins = (userData.wins||0) + 1;
+    userData.pendingCash = (userData.pendingCash||0) + seg.cash;
+  }
 
   incrementSpinsToday();
   await stSet('user:'+currentUser.username, userData);
@@ -1805,6 +1808,7 @@ async function onSpinComplete(seg) {
   updateMyCard();
   loadStats();
   loadRanking();
+  if(seg.cash > 0) loadSorteo(); // refresca el banner de reclamo
 
   const isCash    = seg.cash > 0;
   const isJackpot = seg.cash >= 50000;
@@ -1918,12 +1922,13 @@ document.getElementById('spinBtnApostador').addEventListener('click', async ()=>
 });
 
 async function onApostadorSpinComplete(seg) {
-  // Los puntos de jugador (gamblerPts) NO se gastan; este giro consume 1 del banco.
   userData.pendingSpins      = Math.max(0, (userData.pendingSpins||0) - 1);
   userData.lastApostadorSpin = todayStr();
   userData.gamblerSpins      = (userData.gamblerSpins||0) + 1;
-  if(seg.cash > 0) userData.wins = (userData.wins||0) + 1;
-  // Los puntos "bonus" de este segmento (25/50/5) van al pozo de puntos VIEWER, no gambler
+  if(seg.cash > 0) {
+    userData.wins = (userData.wins||0) + 1;
+    userData.pendingCash = (userData.pendingCash||0) + seg.cash;
+  }
   userData.pts = (userData.pts||0) + (seg.pts||0);
 
   await stSet('user:'+currentUser.username, userData);
@@ -1932,6 +1937,7 @@ async function onApostadorSpinComplete(seg) {
   updateMyCard();
   updateApostadorWheel();
   loadRanking();
+  if(seg.cash > 0) loadSorteo(); // refresca el banner de reclamo
 
   const isCash    = seg.cash > 0;
   const isJackpot = seg.cash >= 100000;
